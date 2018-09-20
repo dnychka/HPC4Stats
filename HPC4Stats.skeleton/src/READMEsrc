@@ -1,0 +1,15 @@
+Add any source files in this directory and specify them to be
+sourced in the .rnl file.
+
+supervisorBatch.R:   The script controlling the supervisor session.
+Should not need to change this and keep the name the same the same if you do. 
+
+doTaskTest.R:  Sample doTask function.
+Note that it takes only one argument, the task ID number but of course can
+use all the objects in the worker session that have been broadcast to it from the supervisor. 
+
+In the .rnl  script reassign the function with the name doTask.
+E.g. in this case
+doTask <- doTaskTest
+
+

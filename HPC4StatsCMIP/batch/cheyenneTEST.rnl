@@ -1,0 +1,83 @@
+#############################
+# R namelist for GEV Fits 
+#############################
+  projectName<- "TEST"
+# Number of workers
+# If not specified will be read from the enviornment variable
+  nWorkers <- 2
+  nTask1 <-  1 # starting task ID
+  nTask2 <-  50 # ending task ID
+# define some project specific data directories.   
+  projectDir<- "/glade/u/home/nychka/Projects/HPC4StatsCMIP"
+  dataDir  <-"/glade/p/CMIP/CMIP5/output1/NCAR/CCSM4/historical/day/atmos/day/r1i1p1/files/pr_20120202"
+  dataFileName <- paste0(dataDir,
+  "/pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc")
+# remaining names can be changed but these standard ones can be kept. 
+  sourceDir<- paste( projectDir, "src",    sep="/")
+  outputDir<- paste( projectDir, "output", sep="/")
+  uniqueTime<- format(Sys.time(), format = "%j-%H%M%S")
+# Optional: Can set  chunkSize to control how many tasks  will be done in
+# before an output file is written. This is just to recover some output in
+# case a large job crashes before completion. 
+# If this is not set then  no chunking is done  
+#   chunkSize<- 3
+#############################
+### source any functions that are needed
+############################
+###  to do the computations.
+###  most important is  doTask, the function that each worker
+###  will be given to complete. Other functions are optional.
+###  here the test doTaskTEST is read in and reassigned as doTask 
+  source( paste0(sourceDir,"/","doTaskTEST.R") )
+  source( paste0(sourceDir,"/", "getSlice.R") )
+############################  
+# define any objects in the supervisor session that will be needed
+############################ 
+# taskTable is the latID for  a given task 
+  taskTable<- 75:125 
+# reassign doTask to the specific one read in.
+  doTask<- doTaskTEST
+# parameter for threshhold 
+  tailProb<- .01
+################################
+# data object names to broadcast to workers
+################################
+# they should be created or read into the supervisor session
+# usually these are the functions and data objects setup above.
+# If something is excluded from this list, the worker will not have it
+# but also note that being in the worker session makes them 
+# available to the 
+# doTask function in the usual way that search paths work
+#
+  namesDataObjects<- 
+  c(        
+        "doTask",
+      "getSlice",
+  	"projectDir",
+     "outputDir",
+     "sourceDir",
+     	"dataDir",
+   	"dataFileName",
+   	"tailProb",
+  "taskTable"          
+           ) 
+#############################
+#  names of libraries  
+#############################
+# libraries to load on each worker
+# and these are also added on the supervisor.
+  namesLibraries<- c("extRemes", "ncdf4")
+# also give the library location 
+# default is to use system wide library
+   namesLibraryLocations<- NULL
+#  namesLibraryLocations<- paste0( projectDir, "/lib")           
+############################
+### R code that will be run as a setup script
+### by the supervisor
+#############################
+### This will be the last part of the code before broadcasting
+### the objects to the workers, loading libraries,  and calling the Rmpi apply function.
+### This part is optional and ideally the objects can be created in 
+### a succint manner above in the object broadcast section
+  
+# Nothing to do!

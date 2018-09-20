@@ -1,0 +1,48 @@
+
+
+#export name of R namelist
+# assume that you are in the batch directory
+    export HPC4StatsNAMELIST=laptopTEST.rnl
+#export number of workers (This is optional if set in the .rnl file).
+    export HPC4StatsnWorkers=2
+
+
+###############
+###### NOTE
+##############
+# This script assumes that you have copied the large model output netcdf file
+# pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc
+# into the data directory
+# download this file separately from the Google Drive Archive.
+
+
+# run the batch job    
+    R CMD batch ../src/supervisorBatch.R  TEST.Rout
+    
+
+# to check results
+# in R and setting working directory to this batch directory.
+# identify the output file
+
+fname<-  dir("../output")
+ # load in results you will have to pick out the right output file
+ print( fname)
+ # edit the fname so it is just the most recent file begining with TEST
+ 
+    load( paste0("../output/",fname) )
+    N<- length( result)
+    look<- matrix( NA, nrow=288, ncol= 192)
+    for(  k in 1: N ){
+    temp<- result[[k]]
+    look[temp$I,temp$J] <-  temp$outSummary[,1]
+    }
+
+library( fields)
+image.plot( log10(look))
+
+
+
+
+
+
+   

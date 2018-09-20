@@ -1,0 +1,11 @@
+This directory is a good place to put R packages that are built
+locally.  To install a package from the HPC4Stats home directory to
+lib
+ 
+R CMD INSTALL --library=lib package.tar.gz
+
+Here package.tar.gz is the source code "tar ball" that is either
+obtained from CRAN or another source.
+
+Loading of packages is controlled by the library list created in the
+.rnl file and managed in the supervisorBatch.R script

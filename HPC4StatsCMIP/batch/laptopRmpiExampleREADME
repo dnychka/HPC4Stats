@@ -1,0 +1,45 @@
+
+# This example runs the same example from the tutorial using Rmpi but
+# within the HPC4Stats Rnamelist frameowrk
+
+#export name of R namelist
+# assume that you are in the batch directory
+    export HPC4StatsNAMELIST=laptopRmpiExample.rnl
+#export number of workers (This is optional if set in the .rnl file).
+    export HPC4StatsnWorkers=2
+
+
+
+
+# run the batch job    
+    R CMD batch ../src/supervisorBatch.R  RmpiExample.Rout
+    
+
+# to check results
+# in R and setting working directory to this batch directory.
+# identify the output file
+
+fname<-  dir("../output")
+ # load in results you will have to pick out the right output file
+ print( fname)
+ # edit the fname so it is just the most recent file begining with TEST
+ 
+load( paste0("../output/",fname) )
+load("../data/pptNC.rda")
+m<- length( pptNC$lon)
+n<- length( pptNC$lat)
+returnLevel<- rep ( NA, m*n)
+for( k in 1:(m*n)){
+returnLevel[k]<- (result[[k]])$outSummary[5]
+}
+returnLevel<- matrix(returnLevel, m,n )
+
+
+pdf("RmpiPlot.pdf")
+image(  pptNC$lon - 180, pptNC$lat ,returnLevel )
+#library( fields) 
+#image.plot( pptNC$lon - 180, pptNC$lat,returnLevel )
+#US( add=TRUE, col="grey20")
+
+dev.off()
+   

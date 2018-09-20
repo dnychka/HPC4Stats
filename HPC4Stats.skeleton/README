@@ -1,0 +1,73 @@
+HPC4Stats
+Douglas Nychka,  douglasnychka@gmail.com
+
+This is a simple skeleton set of subdirectories and source files for
+using Rmpi in a batch mode. The subdirectories each have README files
+that will guide you through what each is for and the appropriate
+contents.
+
+The main advantage of this framework is that with minimal setup one
+can run many different batch computations for a project and keep all
+the results organized and documented. The main device used here is an
+"R Namelist file" (ending with .rnl) that sets up the information
+needed to call the Rmpi package. Throughout this README we refer to
+the batch script and this is just the (commented) R code in
+src/supervisorBatch.R.  Output from Rmpi is in the form of a list and
+this is written as R binary data files along with a copy of the R
+namelist file. That way everything is kept together and 6 months later
+there is a chance of reconstructing what was run! Some timing is also
+included as this may be of interest in planning future runs. What we
+realized is that it is better to keep the script that actually spawns
+workers and calls Rmpi fixed ( batchSupervisor.R) and just fill in the
+key data sets, file names and functions that are specific to a
+particular computation. We also found it is a good idea to setup a
+reproducible list of the data objects, functions and libraries that
+are needed by the workers rather than hard code these for each batch
+job.
+
+The R namelist file makes it possible to have a generic batch file
+that actually creates the worker R sessions and calls Rmpi. An example
+is the template.rnl in the batch subdirectory. To run this example in
+the batch subdirectory, you will need the fields library and of course
+the Rmpi library installed in R. Now move to the batch subdirectory of
+HPC4Stats and in the UNIX bash shell:
+
+export HPC4StatsNAMELIST=template.rnl
+
+R CMD BATCH --no-save ../src/supervisorBatch.R template.Rout
+
+This example reads in, and then broadcasts to the workers, a data set
+of daily ozone values across the Midwest US. The task is to compute
+some statistics for each separate day. Here the task id corresponds to
+a different day.  After this runs examine the template.Rout file to
+see what it did.  Also look at the output subdirectory to see the new
+output file.
+
+Perhaps the most unusual part of this setup is the requirement that the
+name of the R namelist file ( e.g. template.rnl) be passed to the
+batch script as an environment variable. This is the "hook" to keep the
+batch script the same but still tailor the Rmpi computation to
+specific projects.
+
+By default the output is in the subdirectory output and has a unique
+file name based on the project name and the time. This skeleton
+includes  a sample from a previous run to check your results.
+
+See supervisorBatch.R in the src subdirectory for the details of how
+the information in the .rnl file is used to manage the Rmpi
+computation. The function in dotaskTest.R is the task specific
+function that each worker uses. If I was a control freak at this point
+I would write: “Don’t change any part of supervisorBatch.R unless you
+understand what it is doing”. However, this all just R code and that
+flexibility to modify it to your needs may be an attraction to use
+this framework. Keep in mind that the .rnl file is also really just R
+code that is sourced _before_ the rest of the batch script. Thus one
+can do all kinds of computation to setup the Rmpi runs. In particular
+the task table can be pretty complex for some applications because it
+has to connect an integer taskID to the all the information that is
+needed for the worker to do the computation. For example for climate
+model output the taskTable could map the taskID (a row in a data
+frame) to the specific grid box and fitting parameters. It could also
+specific filenames that link to subsets of the data that would be read
+in or written to by the workers.
+

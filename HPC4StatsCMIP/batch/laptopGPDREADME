@@ -1,0 +1,51 @@
+
+
+#export name of R namelist
+    export HPC4StatsNAMELIST=laptopGPD.rnl
+#export number of workers (This is optional if set in the .rnl file).
+    export HPC4StatsnWorkers=2
+
+# run the batch job    
+    R CMD batch ../src/supervisorBatch.R  laptopGPD.Rout
+    
+#################################################
+#checking  results
+# with an example how to reassemble from separate chunks
+#################################################
+# in R and setting working directory to this batch directory.
+
+   fname<-  dir("../output")
+   print( fname)
+ # make sure the fname list is just the chunks of output that you
+ # want -- if not just edit this to be the right subset
+ 
+   look<- matrix( NA, nrow=288, ncol= 192)
+   
+ # assume everything in fname is a chunk from this run
+ for (  iChunk in 1: length( fname)){
+    load( paste0("../output/", fname[iChunk]) )
+    N<- length(result)
+    for(  k in 1 : N ){
+    temp<- result[[k]]
+    # fifth value is return level from fit
+    look[temp$I,temp$J] <-  temp$outSummary[,5]
+    }
+ }   
+
+
+library( fields)
+library( ncdf4)
+dataFileName <- paste0("../data/",
+  "/pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc")
+dataHandle <- nc_open(dataFileName)
+lon<- ncvar_get(dataHandle, "lon")
+lat<- ncvar_get(dataHandle,"lat")
+
+image.plot( lon,lat, log10(look))
+map("world2", add=TRUE)
+
+
+
+
+
+   

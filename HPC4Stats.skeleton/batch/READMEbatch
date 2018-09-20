@@ -1,0 +1,37 @@
+This directory ( batch) contains the R namelist files that provide
+information to the supervisor session.
+
+template.rnl: Example of a namelist with comments indicating places to
+add required and also optional information.
+
+This will just be sourced by R before the supervisor script is run so
+it can contain assignments and R code as needed.
+
+template.pbs templateBig.pbs:
+Examples of a batch queueing file to run on Cheyenne. templateBig.pbs selects 2 node and 70 workers/cores total to test Rmpi running across 2 nodes.
+Note that you will to edit the project id on the line beginning #PBS -A
+in these files.  
+
+To just run as a simple batch job in the bash UNIX shell:
+
+export HPC4StatsNAMELIST=template.rnl
+R CMD BATCH --no-save ../src/supervisorBatch.R template.Rout
+
+The export variable HPC4StatsNAMELIST is always necessary and is the
+hook that enables the R script (batchSupervisor) to know what to do.
+Once is has the right R namelist file then everything else follows
+from this files prescriptions. The name and location of the .rnl file
+can be changed, however, make sure that any default directories are
+changed as well. The number of workers and task ranges can be changed
+by shell variables and see the comments in the template.rnl file for
+details. We have found that running on Cheyenne it is more convenient
+to change the number of workers and the task ranges as an environment variable
+in the UNIX shell rather than continually reediting or copying the .rnl file.
+
+ Finally to run as a serial code (only supervisor is doing tasks using a  for loop).
+ NOTE: Some of the output refers to the Rmpi settings but this just for debugging the R namelist file.
+
+ export HPC4StatsNAMELIST=template.rnl
+ R CMD BATCH --no-save ../src/supervisorBatchSerial.R templateSerial.Rout
+
+

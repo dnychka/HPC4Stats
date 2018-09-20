@@ -1,0 +1,81 @@
+#############################
+# R namelist for GPD Fits  
+#############################
+  projectName<- "RmpiExample"
+# Number of workers
+# If not specified will be read from the enviornment variable
+  nWorkers <- 35
+  nTask1 <-  1 # starting task ID
+  nTask2 <-  49 # ending task ID
+# define some project specific data directories.   
+  projectDir<-"~nychka/HPC4StatsCMIP"
+  dataDir  <- paste0(projectDir, "/data")
+  dataFileName <- paste0(dataDir,  "/pptNC.rda")
+# remaining names can be changed but these standard ones can be kept. 
+  sourceDir<- paste( projectDir, "src",    sep="/")
+  outputDir<- paste( projectDir, "output", sep="/")
+  uniqueTime<- format(Sys.time(), format = "%j-%H%M%S")
+# Optional: Can set  chunkSize to control how many tasks  will be done in
+# before an output file is written. This is just to recover some output in
+# case a large job crashes before completion. 
+# If this is not set then  no chunking is done  
+#   chunkSize<- 2
+#############################
+### source any functions that are needed
+############################
+###  The only required function is  doTask, the function that each worker
+###  will be given to complete a task. Other functions are optional.
+###  here the function doTaskGEV is read in and reassigned below as doTask 
+###  along with a function that reads in part of the model output netcdf file. 
+  source( paste0(sourceDir,"/","doTaskGPDExample.R") )
+############################  
+# define any objects in the supervisor session that will be needed
+############################
+  load(dataFileName)
+  ppt <- pptNC$ppt
+  taskTable   <- expand.grid( 1:length(pptNC$lon),1:length(pptNC$lat) )  # this example is a 7X7 grid
+# reassign doTask to the specific one read in.
+  doTask<- doTaskGPDExample
+# parameter for extreme value fitting used in doTaskTEST  
+  tailProb<- .01
+  returnLevelYear<-100
+ 
+################################
+# data object names to broadcast to workers
+################################
+# these should be created or read into the supervisor session first
+# and typically these are R functions and data objects
+# If something is excluded from this list, the worker will not have it
+# but also note that any object in the worker session makes them 
+# available to the doTask function in the usual way
+  namesDataObjects <- 
+  c(        
+           "doTask",
+         "ppt",
+   	"tailProb",
+   	"returnLevelYear",
+         "taskTable",
+        "projectDir",
+         "outputDir",
+         "sourceDir",
+           "dataDir"
+           ) 
+#############################
+#  names of libraries  
+#############################
+# libraries to load on each worker
+# and these are also added on the supervisor.
+  namesLibraries<- c("extRemes", "ncdf4")
+# also give the library location 
+# default is to use system wide library
+   namesLibraryLocations<- NULL
+#  namesLibraryLocations<- paste0( projectDir, "/lib")           
+############################
+### R code that will be run as a setup script
+### by the supervisor
+#############################
+### This will be the last part of the code before broadcasting
+### the objects to the workers, loading libraries,  and calling the Rmpi apply function.
+### This part is optional and ideally the objects can be created in 
+### a succint manner above in the object broadcast section  
+# Nothing to do!
