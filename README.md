@@ -8,5 +8,18 @@ A framework for managing embarrassingly parallel data analysis using R and the R
 * **CMIPExample** (UNDER REVISION!)Some examples to introduce fitting the Generalized Pareto distribution (GPD) in interactive mode to times series. This gives some background to these methods that is subsequently use in a larger and complete implementation. 
 * **HPC4StatsCMIP** (UNDER REVISION!) A example using a subset of climate model output. The task is to fit a Generalized Pareto distribution (GPD) to daily precipitation simulated by the NCAR CCSM4 model. This is a historical run attempting to reproduce the period 1955 01 01-1989 12 31. Here the GPD is fit my maxmimum likelihood separately for every model grid box.  Note that to reduce the size of the data set for inclusion the full model output has been subsetted to be just a grid of 21X51 locations and 7300 (~20 years) time points. 
 
+###About the data.##
+
+The R script to create **prExample.rda** is ```HPC4StatsCMIP/src/makeExampleData.R```. To run this one will need to 
+* download the large netcdf file ( ~2.6Gb): 
+```pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc```
+
+* install the R package ncdf4
+
+* modify the 3rd line: ```setwd("~/sandbox/HPC4StatsCMIP/data")```
+
+ to be the directory where this data file resides. 
+
+
 
 
