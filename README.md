@@ -12,7 +12,9 @@ A framework for managing embarrassingly parallel data analysis using R and the R
 
 The R script to create **prExample.rda** is ```HPC4StatsCMIP/src/makeExampleData.R```. To run this one will need to 
 * download the large netcdf file ( ~2.6Gb): 
-```pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc```
+```pr_day_CCSM4_historical_r1i1p1_19550101-19891231.n```
+A link to this file : ```https://www.dropbox.com/s/80qbm1zjr7grx4i/pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc?dl=0```
+
 
 * install the R package ncdf4
 
