@@ -1,10 +1,21 @@
+# NOTE laptopGPDProduction.rnl
+# is setup to read the original modle output file that is in NETCDF format
+# you will need to download this (large) file separately
+# pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc
+# and modify the line dataDir  <- "/Users/nychka/Dropbox/Data"
+# to where you have put the file 
 
+#define and export name of R namelist This is always required.
 
-#export name of R namelist
-    export HPC4StatsNAMELIST=laptopGPD.rnl
-#export number of workers (This is optional if set in the .rnl file).
-    export HPC4StatsnWorkers=2
-
+    export HPC4StatsNAMELIST=laptopGPDProduction.rnl
+    
+# export number of workers and task range
+# (These are optional if not set in the .rnl file
+# or if you want to override the choice in the .rnl file).
+    export HPC4StatsnWorkers=3
+    export HPC4StatsnTask1=120
+    export HPC4StatsnTask2=170
+     
 # run the batch job    
     R CMD batch ../src/supervisorBatch.R  laptopGPD.Rout
     
@@ -16,8 +27,8 @@
 
    fname<-  dir("../output")
    print( fname)
- # make sure the fname list is just the chunks of output that you
- # want -- if not just edit this to be the right subset
+ # make sure the fname list is just the single file or  chunks of output
+ # that you want -- if not just edit this to be the right subset
  
    look<- matrix( NA, nrow=288, ncol= 192)
    
@@ -35,12 +46,17 @@
 
 library( fields)
 library( ncdf4)
-dataFileName <- paste0("../data/",
-  "/pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc")
-dataHandle <- nc_open(dataFileName)
-lon<- ncvar_get(dataHandle, "lon")
-lat<- ncvar_get(dataHandle,"lat")
+# To avoid reading the large darta file the lon and lat grid has been
+# saved previously:
+# dataFileName <- paste0("/Users/nychka/Dropbox/Data/",
+#  "pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc")
+# dataHandle <- nc_open(dataFileName)
+# lon<- ncvar_get(dataHandle, "lon")
+# lat<- ncvar_get(dataHandle,"lat")
+# save( lon, lat, file="../data/lonlatCCSM4.rda")
+#
 
+load( "../data/lonlatCCSM4.rda")
 image.plot( lon,lat, log10(look))
 map("world2", add=TRUE)
 
