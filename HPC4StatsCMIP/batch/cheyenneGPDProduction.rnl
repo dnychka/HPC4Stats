@@ -1,65 +1,67 @@
 #############################
-# R namelist for GEV Fits 
+# R namelist for GPD Fits 
 #############################
-  projectName<- "TEST"
+  projectName<- "GPD"
 # Number of workers
-# If not specified will be read from the enviornment variable
-  nWorkers <- 2
-  nTask1 <-  1 # starting task ID
-  nTask2 <-  50 # ending task ID
+# The enviornment variables for these next three options
+# will set or replace any bindings in this script
+# 
+  nWorkers <- 75
+  nTask1 <-  50 # starting task ID
+  nTask2 <-  150 # ending task ID
 # define some project specific data directories.   
-  projectDir<- "/Users/nychka/Home/Projects/HPC4StatsCMIP"
-  dataDir  <- paste0(projectDir, "/data")
+  projectDir<- ".."
+  dataDir  <- "/Users/nychka/Dropbox/Data/"
   dataFileName <- paste0(dataDir,
-  "/pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc")
+  "pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc")
 # remaining names can be changed but these standard ones can be kept. 
   sourceDir<- paste( projectDir, "src",    sep="/")
   outputDir<- paste( projectDir, "output", sep="/")
-  uniqueTime<- format(Sys.time(), format = "%j-%H%M%S")
+  uniqueTime<- format(Sys.time(), format = "%jX%H%M%S")
 # Optional: Can set  chunkSize to control how many tasks  will be done in
 # before an output file is written. This is just to recover some output in
 # case a large job crashes before completion. 
 # If this is not set then  no chunking is done  
-#   chunkSize<- 3
+#   chunkSize <- 2
 #############################
 ### source any functions that are needed
 ############################
-###  to do the computations.
-###  most important is  doTask, the function that each worker
-###  will be given to complete. Other functions are optional.
-###  here the test doTaskTEST is read in and reassigned as doTask 
-  source( paste0(sourceDir,"/","doTaskTEST.R") )
-  source( paste0(sourceDir,"/", "getSlice.R") )
+###  The only required function is  doTask, the function that each worker
+###  will be given to complete a task. Other functions are optional.
+###  here the function doTaskGEV is read in and reassigned below as doTask 
+###  along with a function that reads in part of the model output netcdf file. 
+  source( paste0(sourceDir,"/","doTaskGPDProduction.R") )
+  source( paste0(sourceDir,"/", "getSliceNETCDF.R") )
 ############################  
 # define any objects in the supervisor session that will be needed
 ############################ 
 # taskTable is the latID for  a given task 
-  taskTable<- 75:125 
+  taskTable<- 1:192   # there are 192 latitude bands
 # reassign doTask to the specific one read in.
-  doTask<- doTaskTEST
-# parameter for threshhold 
+  doTask<- doTaskGPDProduction
+# parameter for extreme value fitting used in doTaskTEST  
   tailProb<- .01
+  returnLevelYear<-100
 ################################
 # data object names to broadcast to workers
 ################################
-# they should be created or read into the supervisor session
-# usually these are the functions and data objects setup above.
+# these should be created or read into the supervisor session first
+# and typically these are R functions and data objects
 # If something is excluded from this list, the worker will not have it
-# but also note that being in the worker session makes them 
-# available to the 
-# doTask function in the usual way that search paths work
-#
+# but also note that any object in the worker session makes them 
+# available to the doTask function in the usual way
   namesDataObjects<- 
   c(        
-        "doTask",
-      "getSlice",
-  	"projectDir",
-     "outputDir",
-     "sourceDir",
-     	"dataDir",
+           "doTask",
+         "getSliceNETCDF",
    	"dataFileName",
    	"tailProb",
-  "taskTable"          
+   	"returnLevelYear",
+         "taskTable",
+        "projectDir",
+         "outputDir",
+         "sourceDir",
+           "dataDir"
            ) 
 #############################
 #  names of libraries  

@@ -1,0 +1,75 @@
+
+
+This script fits a GPD distribution to a smaller nmuber of model grid
+cells and does not use all the time points. The data file
+prExample.rda is already in R binary format and contained in the data
+directory.
+
+The 2 lines below with run this batch job on 2 cores from a bash shell
+in UNIX. You will need to have the extRemes and netcdf4 packages
+installed in R.  To on more cores set the nWorker variable to another
+size either in the .rnl file or through the environment variable
+HPC4StatsnWorker . Note that on Cheyenne you will need to modify the
+.pbs file to include more nodes if the number of workers exceeds 35.
+
+
+# Required export name of R namelist
+# assume that you are in the batch directory
+    export HPC4StatsNAMELIST=TEST.rnl
+# run the batch job
+
+    R CMD batch ../src/supervisorBatch.R  TEST.Rout
+
+# browse the output file TEST.Rout for timing and to check this
+# did not have errors.
+
+
+To run the Cheyenne version of this script use the script cheyenneTEST.pbs to
+submit the job to a batch queue
+
+In the HPC4StatsCMIP/batch directory and in UNIX:
+
+qsub cheyenneTEST.pbs
+
+Take a look at this file to review how the batch job is setup. You
+will note the last two lines of this file are similar to those
+above. Because this uses the same .rnl file only 2 workers are used in
+this example.
+
+
+################################################################
+# To check results
+# Start R  and set working directory to this batch directory.
+# identify the output file
+
+fname<-  dir("../output")
+ # load in results you will have to pick out the right output file
+ print( fname)
+ # edit the fname so it is just the most recent file begining with TEST
+    
+    load( paste0("../output/",fname) )
+    load("../data/prExample.rda")
+    dimData<- dim( prExample)
+    
+   
+    look<- matrix( NA, nrow=dimData[1], ncol= dimData[2])
+    result<- (get(fname))$result
+    N<- length( result)
+    for(  k in 1: N ){
+    temp<- result[[k]]
+    look[temp$I,temp$J] <-  temp$outSummary[,1]
+    }
+
+# make sure you have installed the fields package.
+
+library( fields)
+image.plot( lonExample,latExample, log10(look))
+map("world2", add=TRUE, col="grey20", lwd=3)
+
+
+
+
+
+
+
+   

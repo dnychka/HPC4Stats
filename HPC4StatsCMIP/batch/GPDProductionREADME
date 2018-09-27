@@ -1,5 +1,5 @@
 # NOTE laptopGPDProduction.rnl
-# is setup to read the original modle output file that is in NETCDF format
+# is setup to read the original model output file that is in NETCDF format
 # you will need to download this (large) file separately
 # pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc
 # and modify the line dataDir  <- "/Users/nychka/Dropbox/Data"

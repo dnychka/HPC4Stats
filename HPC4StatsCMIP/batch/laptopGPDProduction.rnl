@@ -8,7 +8,7 @@
 # 
   nWorkers <- 3
   nTask1 <-  120 # starting task ID
-  nTask2 <-  130 # ending task ID
+  nTask2 <-  170 # ending task ID
 # define some project specific data directories.   
   projectDir<- ".."
   dataDir  <- "/Users/nychka/Dropbox/Data/"
