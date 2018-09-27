@@ -7,8 +7,8 @@
 # will set or replace any bindings in this script
 # 
   nWorkers <- 75
-  nTask1 <-  50 # starting task ID
-  nTask2 <-  150 # ending task ID
+  nTask1 <-   21 # starting task ID
+  nTask2 <-  170 # ending task ID
 # define some project specific data directories.   
   projectDir<- ".."
   dataDir  <- "/Users/nychka/Dropbox/Data/"

@@ -1,0 +1,89 @@
+
+R version 3.5.1 (2018-07-02) -- "Feather Spray"
+Copyright (C) 2018 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> options( echo=FALSE)
+*************************************
+***** Begining HPC4Stats batch script
+*************************************
+Reading R Namelist (.rnl file) laptopGPDProduction.rnl
+Read 85 items
+Done sourcing R Namelist file: laptopGPDProduction.rnl
+****
+Project directory set from the R namelist file: 
+..
+Working directory for this script:
+/Users/nychka/Dropbox/Home/Repositories/HPC4Stats/HPC4StatsCMIP/batch
+****
+loading library:  extRemes
+loading library:  ncdf4
+****
+number of workers 3
+number of tasks: 51 from  120 to 170
+****
+Number of output chunks: 1
+Workspace of supervisor :
+ [1] "chunkEnd"              "chunkSize"             "chunkStart"           
+ [4] "copyRNamelist"         "dataDir"               "dataFileName"         
+ [7] "doTask"                "doTaskGPDProduction"   "getSliceNETCDF"       
+[10] "namesDataObjects"      "namesLibraries"        "namesLibraryLocations"
+[13] "nChunks"               "nTask1"                "nTask1Env"            
+[16] "nTask2"                "nTask2Env"             "nTasks"               
+[19] "nWorkers"              "nWorkersEnv"           "objName"              
+[22] "outputDir"             "projectDir"            "projectName"          
+[25] "returnLevelYear"       "RNamelist"             "sourceDir"            
+[28] "tailProb"              "taskTable"             "uniqueTime"           
+	3 slaves are spawned successfully. 0 failed.
+master (rank 0, comm 1) of size 4 is running on: csm-wl-dhcp-235-225 
+slave1 (rank 1, comm 1) of size 4 is running on: csm-wl-dhcp-235-225 
+slave2 (rank 2, comm 1) of size 4 is running on: csm-wl-dhcp-235-225 
+slave3 (rank 3, comm 1) of size 4 is running on: csm-wl-dhcp-235-225 
+broadcasting:  doTask
+broadcasting:  getSliceNETCDF
+broadcasting:  dataFileName
+broadcasting:  tailProb
+broadcasting:  returnLevelYear
+broadcasting:  taskTable
+broadcasting:  projectDir
+broadcasting:  outputDir
+broadcasting:  sourceDir
+broadcasting:  dataDir
+****
+ broadcasting library:  extRemes
+ broadcasting library:  ncdf4
+****
+ 
+Time (sec) for  GPD270X141718  :  238.165
+output file:  ../output/GPD270X141718
+****
+Summary
+3  Workers  and  51 tasks
+timing from Supervisor: 
+    Spawn Broadcast     Apply 
+    1.315     0.290   238.214 
+average task time: timeApply*nWorkers/nTasks  14.01259
+****
+To load an output file, in R try:
+load( '../output/GPD270X141718' )
+This is a list object. Use the names function to
+ list the different components
+[1] 1
+> 
+> proc.time()
+   user  system elapsed 
+  4.451   1.544 241.517 
