@@ -61,10 +61,11 @@ fname<-  dir("../output")
     }
 
 # make sure you have installed the fields package.
-
+pdf(file= "test.pdf")
 library( fields)
 image.plot( lonExample,latExample, log10(look))
 map("world2", add=TRUE, col="grey20", lwd=3)
+dev.off()
 
 
 

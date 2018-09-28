@@ -1,10 +1,10 @@
 #!/bin/bash
 #PBS -N cheyenneGEV
 #PBS -q economy
-#PBS -l select=1:ncpus=36:mpiprocs=36
-#PBS -l walltime=00:35:00
+#PBS -l select=3:ncpus=36:mpiprocs=36
+#PBS -l walltime=00:45:00
 #PBS -j oe
-#PBS -A P86850053
+#PBS -A P86850056
 
 module load intel/16.0.3
 module load R/3.4.0
@@ -12,6 +12,6 @@ module load openmpi/1.8.8
 module load rmpi/0.6-6
 source /glade/u/apps/opt/lmod/4.2.1/init/bash
 
-export HPC4StatsNAMELIST=cheyenneGEV.rnl
+export HPC4StatsNAMELIST=cheyenneGPDProduction.rnl
 
-mpirun -n 1 R CMD BATCH --no-save ../src/supervisorBatch.R $PBS_JOBID.Rout
+mpirun -quiet -n 1 R CMD BATCH --no-save ../src/supervisorBatch.R $PBS_JOBID.Rout

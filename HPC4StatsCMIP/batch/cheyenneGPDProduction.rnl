@@ -6,12 +6,13 @@
 # The enviornment variables for these next three options
 # will set or replace any bindings in this script
 # 
-  nWorkers <- 75
+  nWorkers <- 35 + 2*36
   nTask1 <-   21 # starting task ID
   nTask2 <-  170 # ending task ID
 # define some project specific data directories.   
   projectDir<- ".."
-  dataDir  <- "/Users/nychka/Dropbox/Data/"
+dataDir <-"/glade/p/CMIP/CMIP5/output1/NCAR/CCSM4/historical/day/atmos/day/r1i1p1/files/pr_20120202/"
+#  dataDir  <- "/Users/nychka/Dropbox/Data/"
   dataFileName <- paste0(dataDir,
   "pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc")
 # remaining names can be changed but these standard ones can be kept. 
