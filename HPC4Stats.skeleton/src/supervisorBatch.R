@@ -2,11 +2,12 @@ options( echo=FALSE)
 cat("*************************************",fill=TRUE)
 cat("***** Begining HPC4Stats batch script",fill=TRUE)
 cat("*************************************",fill=TRUE) 
-# I recommend  cleaning out workspace:
-  remove( list=ls())
+# if the R object   RNamelist is not around then read it in from the environemnt 
 # grab the file name of the namelist from the environmental varaible
 # HPC4Stats
-  RNamelist     <- Sys.getenv("HPC4StatsNAMELIST")
+if( !exists( "RNamelist") ) {
+     RNamelist     <- Sys.getenv("HPC4StatsNAMELIST")
+  }   
   cat("Reading R Namelist (.rnl file)", RNamelist, fill=TRUE)
   source(RNamelist)
   copyRNamelist<- scan(RNamelist, what="a", sep="\r" ) 
@@ -71,7 +72,7 @@ for( objName in namesLibraries ) {
   }
 # figure out the number of chunks if this variable is set
 # 
-  if( !exists("chunkSize") ){
+if( !exists("chunkSize") ){
     chunkStart<- nTask1
     chunkEnd<- nTask2
     chunkSize <- 1
@@ -131,7 +132,7 @@ for( objName in namesLibraries ) {
  
 ###################################################################  
 # here is where the heavy lifting happens
-# do this in chunks 
+# do this in chunks
   if( nChunks > 1){
     chunkNames<- paste0(projectName, uniqueTime, "Chunk", 1:nChunks) 
     }else{
@@ -141,7 +142,7 @@ outputFileName<- paste0(outputDir,"/",chunkNames)
 #
 tick<- proc.time()[3] 
 cat( "****", fill=TRUE)
-for(  k in 1 : nChunks){  
+for(  k in 1 : nChunks){
   tick0<- proc.time()[3]
   result <- mpi.iapplyLB( chunkStart[k] : chunkEnd[k], doTask)
   #
