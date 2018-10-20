@@ -1,13 +1,13 @@
 
 
-This script fits a GPD distribution to a smaller nmuber of model grid
+This script fits a GPD distribution to a smaller number of model grid
 cells and does not use all the time points. The data file
 prExample.rda is already in R binary format and contained in the data
 directory.
 
-The 2 lines below with run this batch job on 2 cores from a bash shell
+The 2 lines below will run this batch job on 2 cores from a bash shell
 in UNIX. You will need to have the extRemes and netcdf4 packages
-installed in R.  To on more cores set the nWorker variable to another
+installed in R.  To run on more cores set the nWorker variable to another
 size either in the .rnl file or through the environment variable
 HPC4StatsnWorker . Note that on Cheyenne you will need to modify the
 .pbs file to include more nodes if the number of workers exceeds 35.
@@ -44,8 +44,8 @@ this example.
 
 fname<-  dir("../output")
  # load in results you will have to pick out the right output file
- print( fname)
- # edit the fname so it is just the most recent file begining with TEST
+ print(fname)
+ # edit the fname so it is just the most recent file beginning with TEST
     
     load( paste0("../output/",fname) )
     load("../data/prExample.rda")
