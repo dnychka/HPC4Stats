@@ -1,8 +1,14 @@
+################################
+HPC4Stats/HPC4Stats.skeleton/src
+################################
+Douglas Nychka, douglasnychka@gmail.com
+with modification from Dorit Hammerling, dorith@ucar.edu
+
 Add any source files in this directory and specify them to be
 sourced in the .rnl file.
 
 supervisorBatch.R:   The script controlling the supervisor session.
-Should not need to change this and keep the name the same the same if you do. 
+You should not need to change this and keep the name the same if you do. 
 
 doTaskTest.R:  Sample doTask function.
 Note that it takes only one argument, the task ID number but of course can

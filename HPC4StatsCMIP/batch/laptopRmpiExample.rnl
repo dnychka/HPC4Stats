@@ -14,7 +14,7 @@
 # remaining names can be changed but these standard ones can be kept. 
   sourceDir<- paste( projectDir, "src",    sep="/")
   outputDir<- paste( projectDir, "output", sep="/")
-  uniqueTime<- format(Sys.time(), format = "%j-%H%M%S")
+  uniqueTime<- format(Sys.time(), format = "%Y%H%M%S")
 # Optional: Can set  chunkSize to control how many tasks  will be done in
 # before an output file is written. This is just to recover some output in
 # case a large job crashes before completion. 

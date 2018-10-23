@@ -13,8 +13,9 @@
  source /glade/u/apps/opt/lmod/4.2.1/init/bash
  
  export HPC4StatsNAMELIST=template.rnl
-# for Cheyenne there are 36 cores on a node and so 35 available for workers.
- export HPC4StatsnWorkers=70
+# for Cheyenne there are 36 cores on a node and so 35 available for workers on the node
+# with the supervisor and 36 on all remaining nodes (here only one).
+ export HPC4StatsnWorkers=71
 # this example has 75 tasks listed in the .rnl file. 
 
  mpirun -n 1 R CMD BATCH --no-save ../src/supervisorBatch.R $PBS_JOBID.Rout

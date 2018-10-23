@@ -1,4 +1,8 @@
-
+###################################
+HPC4Stats/HPC4StatsCMIP/batch test
+##################################
+Douglas Nychka, douglasnychka@gmail.com
+with modification from Dorit Hammerling, dorith@ucar.edu
 
 This script fits a GPD distribution to a smaller number of model grid
 cells and does not use all the time points. The data file
@@ -9,7 +13,7 @@ The 2 lines below will run this batch job on 2 cores from a bash shell
 in UNIX. You will need to have the extRemes and netcdf4 packages
 installed in R.  To run on more cores set the nWorker variable to another
 size either in the .rnl file or through the environment variable
-HPC4StatsnWorker . Note that on Cheyenne you will need to modify the
+HPC4StatsnWorker. Note that on Cheyenne you will need to modify the
 .pbs file to include more nodes if the number of workers exceeds 35.
 
 
@@ -20,8 +24,7 @@ HPC4StatsnWorker . Note that on Cheyenne you will need to modify the
 
     R CMD batch ../src/supervisorBatch.R  TEST.Rout
 
-# browse the output file TEST.Rout for timing and to check this
-# did not have errors.
+# browse the output file TEST.Rout for timing and to check for potential errors.
 
 
 To run the Cheyenne version of this script use the script cheyenneTEST.pbs to
@@ -60,7 +63,7 @@ fname<-  dir("../output")
     look[temp$I,temp$J] <-  temp$outSummary[,1]
     }
 
-# make sure you have installed the fields package.
+# make sure you have the fields package installed.
 pdf(file= "test.pdf")
 library( fields)
 image.plot( lonExample,latExample, log10(look))

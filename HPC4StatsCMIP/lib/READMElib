@@ -1,3 +1,10 @@
+################################
+HPC4Stats/HPC4StatsCMIP/lib
+################################
+Douglas Nychka, douglasnychka@gmail.com
+with modification from Dorit Hammerling, dorith@ucar.edu
+
+
 This directory is a good place to put R packages that are built
 locally.  To install a package from the HPC4Stats home directory to
 lib

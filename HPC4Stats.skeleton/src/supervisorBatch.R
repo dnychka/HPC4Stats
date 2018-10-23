@@ -72,7 +72,7 @@ for( objName in namesLibraries ) {
   }
 # figure out the number of chunks if this variable is set
 # 
-if( !exists("chunkSize") ){
+  if( !exists("chunkSize") ){
     chunkStart<- nTask1
     chunkEnd<- nTask2
     chunkSize <- 1
@@ -132,7 +132,7 @@ if( !exists("chunkSize") ){
  
 ###################################################################  
 # here is where the heavy lifting happens
-# do this in chunks
+# do this in chunks on large systems
   if( nChunks > 1){
     chunkNames<- paste0(projectName, uniqueTime, "Chunk", 1:nChunks) 
     }else{
@@ -142,7 +142,7 @@ outputFileName<- paste0(outputDir,"/",chunkNames)
 #
 tick<- proc.time()[3] 
 cat( "****", fill=TRUE)
-for(  k in 1 : nChunks){
+for(  k in 1 : nChunks){  
   tick0<- proc.time()[3]
   result <- mpi.iapplyLB( chunkStart[k] : chunkEnd[k], doTask)
   #

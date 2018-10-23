@@ -85,7 +85,7 @@ qsub cheyenneGPDProduction.pbs
 
 library( fields)
 #library( ncdf4)
-# To avoid reading the large darta file the lon and lat grid has been
+# To avoid reading the large data file the lon and lat grid has been
 # saved previously:
 # dataFileName <- paste0("/Users/nychka/Dropbox/Data/",
 #  "pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc")

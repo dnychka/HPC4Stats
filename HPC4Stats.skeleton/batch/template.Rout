@@ -28,7 +28,7 @@ Done sourcing R Namelist file: template.rnl
 Project directory set from the R namelist file: 
 ..
 Working directory for this script:
-/Users/nychka/Dropbox/Home/Repositories/HPC4Stats/HPC4Stats.skeleton/batch
+/Users/dorith/Dropbox/Courses/HPC4Stats_Asheville/HPC4Stats.skeleton/batch
 ****
 loading library:  fields
 ****
@@ -47,9 +47,9 @@ Workspace of supervisor :
 [22] "projectDir"            "projectName"           "RNamelist"            
 [25] "sourceDir"             "taskTable"             "uniqueTime"           
 	2 slaves are spawned successfully. 0 failed.
-master (rank 0, comm 1) of size 3 is running on: Ratstar 
-slave1 (rank 1, comm 1) of size 3 is running on: Ratstar 
-slave2 (rank 2, comm 1) of size 3 is running on: Ratstar 
+master (rank 0, comm 1) of size 3 is running on: cisl-alcoa 
+slave1 (rank 1, comm 1) of size 3 is running on: cisl-alcoa 
+slave2 (rank 2, comm 1) of size 3 is running on: cisl-alcoa 
 NOTE: All data objects and functions in the supervisor workspace will be 
         broadcast to the workers
 broadcasting:  chunkEnd
@@ -86,22 +86,22 @@ broadcasting:  uniqueTime
  broadcasting library:  fields
 ****
  
-Time (sec) for  TEST282X193727  :  3.82
-output file:  ../output/TEST282X193727
+Time (sec) for  TEST2018092215  :  3.912
+output file:  ../output/TEST2018092215
 ****
 Summary
 2  Workers  and  75 tasks
 timing from Supervisor: 
     Spawn Broadcast     Apply 
-    0.542     0.830     3.833 
-average task time: timeApply*nWorkers/nTasks  0.1022133
+    0.532     0.722     3.924 
+average task time: timeApply*nWorkers/nTasks  0.10464
 ****
 To load an output file, in R try:
-load( '../output/TEST282X193727' )
+load( '../output/TEST2018092215' )
 This is a list object. Use the names function to
  list the different components
 [1] 1
 > 
 > proc.time()
    user  system elapsed 
-  3.565   0.193   5.953 
+  3.594   0.217   6.110 
