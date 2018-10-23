@@ -1,0 +1,18 @@
+Package: HPC4Stats
+Type: Package
+Title: Manages parallel data analysis  
+Version: 1.0
+Date: 2018-10-20
+Authors@R: c( person("Douglas", "Nychka",
+               role = c("aut", "cre"),
+               email = "douglasnychka@gmail.com"),
+              person("Dorit", "Hammerling", role = c("aut"),
+               email = "dorith@ucar.edu")
+	       ) 
+Author: Douglas Nychka [aut, cre], Dorit Hammerling [aut]
+Maintainer: Douglas Nychka <nychka@mines.edu>
+Description: Embarrassingly parallel data analysis tasks
+ in R are managed by a supervisor/worker model. The worker R
+ sessions are creates and managed through the Rmpi package. 
+Depends: R (>= 3.0), Rmpi
+License: GPL (>= 2)
