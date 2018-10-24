@@ -1,4 +1,4 @@
-HPC4Stats <- function(RNamelist=NULL, serial=FALSE, ...){
+HPC4StatsOLD <- function(RNamelist=NULL,...){
 # 
 cat("*************************************",fill=TRUE)
 cat("***** Begining HPC4Stats supervisor",fill=TRUE)
@@ -11,7 +11,7 @@ if( is.null( "RNamelist") ) {
      RNamelist     <- Sys.getenv("HPC4StatsNAMELIST")
   }   
   cat("Sourcing R Namelist (.rnl file)", RNamelist, fill=TRUE)
-  source(RNamelist, local=ifelse(serial,FALSE,TRUE) ) 
+  source(RNamelist, local=TRUE)
   copyRNamelist<- scan(RNamelist, what="a", sep="\r" ) 
   cat("Done sourcing", fill=TRUE)
   cat( "****", fill=TRUE)
@@ -47,7 +47,8 @@ if( is.null( "RNamelist") ) {
     nTask2<- as.numeric( nTask2Env )
     cat("nTask2  read from environment", fill=TRUE)
   }
-# load extra libraries for supervisor\
+# load libraries for supervisor
+library( Rmpi)
 if( !is.null(namesLibraries)){ 
 cat( "****", fill=TRUE)  
 for( objName in namesLibraries ) {
@@ -71,7 +72,6 @@ for( objName in namesLibraries ) {
     cat("nTasks: ", nTasks, " nWorkers: ", nWorkers, fill=TRUE)
     stop("Stopping. Why so many Workers?")
   }
-#  
 # figure out the number of chunks if this variable is set
 # 
 if( !exists("chunkSize") ){
@@ -87,23 +87,14 @@ if( !exists("chunkSize") ){
   }
   nChunks<- length( chunkStart )
   cat( "****", fill=TRUE)  
-  cat("Number of output chunks:" , nChunks, fill=TRUE)
-  if( nChunks > 1){
-    chunkNames<- paste0(projectName, uniqueTime, "Chunk", 1:nChunks) 
-  }else{
-    chunkNames<- paste0(projectName,uniqueTime) 
-  }
-  
-  outputFileName<- paste0(outputDir,"/",chunkNames)
+  cat("Number of output chunks:" , nChunks, fill=TRUE)  
 #  
 # list R working directory  
   cat("Workspace of supervisor :", fill=TRUE) 
   ls()
-if(!serial){  
 ############
 # Rmpi it up!
 ############
-  library( Rmpi)
 # Spawn the workers
   tick<- proc.time()[3]
     mpi.spawn.Rslaves(nslaves=nWorkers)
@@ -139,29 +130,23 @@ if(!serial){
   } 
   tock<- proc.time()[3]
   timeBroadcast<-  tock - tick
-
-}
-###### end !serial block for Rmpi broadcasts 
 ###################################################################
+ 
 ###################################################################  
 # here is where the heavy lifting happens
-# do this in chunks 
-cat( "****", fill=TRUE)
+# do this in chunks
+  if( nChunks > 1){
+    chunkNames<- paste0(projectName, uniqueTime, "Chunk", 1:nChunks) 
+    }else{
+    chunkNames<- paste0(projectName,uniqueTime) 
+    }
+outputFileName<- paste0(outputDir,"/",chunkNames)
 #
-tick<- proc.time()[3]   
+tick<- proc.time()[3] 
+cat( "****", fill=TRUE)
 for(  k in 1 : nChunks){
   tick0<- proc.time()[3]
-  if(!serial){
   result <- mpi.iapplyLB( chunkStart[k] : chunkEnd[k], doTask)
-  }
-  else{
-# serial computation for testing    
-    result <- list()
-    for( id in chunkStart[k] : chunkEnd[k]){
-      out<- doTask(id)
-      result <- c( result, list(out) )
-    }
-  }
   #
   tock0<- proc.time()[3]
   cat(" ", fill=TRUE)
@@ -186,8 +171,7 @@ for(  k in 1 : nChunks){
 tock<- proc.time()[3]
   timeApply<- tock - tick
 ###################################################################  
-# table of timing stats only do if !serial
-  if(!serial){
+# table of timing stats  
   timingStats<- c( timeSpawn,timeBroadcast,  timeApply)
   names( timingStats)<- c(  "Spawn", "Broadcast","Apply")
   cat( "****", fill=TRUE)
@@ -198,7 +182,6 @@ tock<- proc.time()[3]
   averageTime<- timeApply*nWorkers/ ( nTasks)
   cat( "average task time: timeApply*nWorkers/nTasks ", 
        averageTime, fill=TRUE )
-  }  
 cat( "****", fill=TRUE)
 # Hints about reading back  in results
   cat( "To load an output file, in R try:", fill=TRUE)
@@ -213,11 +196,8 @@ cat("This is a list object. Use the names function to
   dput(outputFileName)
   cat( "####", fill=TRUE)
   }
-if( !serial){ 
+ 
 # close up everything -- bad things may happen if workers are not closed.
 mpi.close.Rslaves()
-} 
-
-
 }
 
