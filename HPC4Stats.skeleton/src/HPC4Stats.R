@@ -58,11 +58,9 @@ for( objName in namesLibraries ) {
    )
 }
 }
-######################################################
-# following should not depend on a specific project 
-###################################################### 
-  cat( "****", fill=TRUE)  
-  cat("number of workers", nWorkers, fill=TRUE)
+########################################################
+# following code should not depend on a specific project 
+########################################################
   #some checks  
   nTasks<- nTask2 - nTask1 + 1
   cat("number of tasks:", nTasks, "from ", nTask1,
@@ -112,9 +110,13 @@ if(!serial){
     nWorkers<- as.numeric( nWorkersEnv )
     cat("number of workers from environment", nWorkers, fill=TRUE)
   }
-    if( !exists(nWorkers)){
-        cat("This is a parallel computation but the number of worker (nWorkers) has not been specified", fill-TRUE)
-        }
+    if( !exists("nWorkers")){
+        cat("This is a parallel computation but the number of workers
+                (nWorkers) has not been specified", fill-TRUE)
+        q()
+    }
+cat( "****", fill=TRUE)  
+  cat("number of workers", nWorkers, fill=TRUE)    
 # I hope you have install Rmpi!    
   library( Rmpi)
 # Spawn the workers
@@ -230,7 +232,7 @@ cat("This is a list object. Use the names function to
  list the different components", fill =TRUE)
 # Listing of all the output files handy for cutting and pasting.
   if( length(outputFileName) > 1 ){
-  cat("The full outputFileName list for is:", fill=TRUE)
+  cat("The full outputFileName list for this computation is:", fill=TRUE)
   cat( "####", fill=TRUE)
   cat("outFileName <- ", fill=TRUE)
   dput(outputFileName)
