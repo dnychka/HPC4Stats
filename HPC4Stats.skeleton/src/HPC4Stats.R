@@ -1,21 +1,22 @@
 
-cat("*************************************",fill=TRUE)
-cat("***** Begining HPC4Stats serial script",fill=TRUE)
-cat("*************************************",fill=TRUE)
-  options( echo=FALSE)
-# I recommend  cleaning out workspace:
-  remove( list=ls())
+# 
+cat("*******************************************", fill=TRUE)
+cat("***** Begining HPC4Stats supervisor script  ",fill=TRUE)
+cat("*******************************************", fill=TRUE) 
+# if the R object  RNamelist is not defined then
 # grab the file name of the namelist from the environmental varaible
-# HPC4Stats
-  RNamelist     <- Sys.getenv("HPC4StatsNAMELIST")
-  cat("Reading R Namelist (.rnl file)", RNamelist, fill=TRUE)
+# HPC4StatsNAMELIST
+ if( !exists("RNamelist") ) {
+     RNamelist <- Sys.getenv("HPC4StatsNAMELIST")
+   }   
+  cat("Sourcing R Namelist (.rnl file)", RNamelist, fill=TRUE)
   source(RNamelist)
   copyRNamelist<- scan(RNamelist, what="a", sep="\r" ) 
-  cat("Done sourcing R Namelist file:", RNamelist, fill=TRUE)
+  cat("Done sourcing", fill=TRUE)
   cat( "****", fill=TRUE)
   cat("Project directory set from the R namelist file: ", fill=TRUE)
   cat(  projectDir, fill=TRUE)
-  cat("Working directory for this script:", fill=TRUE )
+  cat("Working directory for this session:", fill=TRUE )
   cat(  getwd(), fill=TRUE )
 #  
 # sourcing RNamelist should 
@@ -26,17 +27,16 @@ cat("*************************************",fill=TRUE)
 # It should make sense to call doTask(myTaskID)
 # in the supervisor session where myTaskID is
 # any  integer value that is in the task range.
-#  
-# figure out number of workers  
-cat("Rmpi parameters are listed just for debugging the \r
-    R namelist file and Rmpi is not used", fill=TRUE)
-  nWorkersEnv<- Sys.getenv("HPC4StatsnWorkers")
-# use the environment variable for the number of workers
-# this makes it convenient instead of editing the .rnl file.  
-  if( nWorkersEnv != ""){
-    nWorkers<- as.numeric( nWorkersEnv )
-    cat("number of workers from environment", nWorkers, fill=TRUE)
-  }  
+#
+# figure out if this is a serial job or not 
+# the default is not to be serial
+  if( !exists("serial") ){
+    serial=FALSE   
+  }
+if( serial){
+    cat("This is a serial computation with the loop over workers is replaced by \r", "a simple for loop in the supervisor session", fill=TRUE)
+   }
+ 
   nTask1Env<- Sys.getenv("HPC4StatsnTask1")
   if( nTask1Env != ""){
     nTask1<- as.numeric( nTask1Env )
@@ -47,9 +47,7 @@ cat("Rmpi parameters are listed just for debugging the \r
     nTask2<- as.numeric( nTask2Env )
     cat("nTask2  read from environment", fill=TRUE)
   }
-# load libraries for supervisor
-
-cat("###  library( Rmpi)", fill=TRUE)
+# load extra libraries for supervisor\
 if( !is.null(namesLibraries)){ 
 cat( "****", fill=TRUE)  
 for( objName in namesLibraries ) {
@@ -73,9 +71,10 @@ for( objName in namesLibraries ) {
     cat("nTasks: ", nTasks, " nWorkers: ", nWorkers, fill=TRUE)
     stop("Stopping. Why so many Workers?")
   }
+#  
 # figure out the number of chunks if this variable is set
 # 
-  if( !exists("chunkSize") ){
+if( !exists("chunkSize") ){
     chunkStart<- nTask1
     chunkEnd<- nTask2
     chunkSize <- 1
@@ -88,78 +87,108 @@ for( objName in namesLibraries ) {
   }
   nChunks<- length( chunkStart )
   cat( "****", fill=TRUE)  
-  cat("Number of output chunks:" , nChunks, fill=TRUE)  
+  cat("Number of output chunks:" , nChunks, fill=TRUE)
+  if( nChunks > 1){
+    chunkNames<- paste0(projectName, uniqueTime, "Chunk", 1:nChunks) 
+  }else{
+    chunkNames<- paste0(projectName,uniqueTime) 
+  }
+  
+  outputFileName<- paste0(outputDir,"/",chunkNames)
 #  
 # list R working directory  
   cat("Workspace of supervisor :", fill=TRUE) 
-  ls()
-############
-# Rmpi it up!
-############
+ls()
+
+if(!serial){
+###################################################################
+###### BEGIN !serial block for getting nWorkers and  Rmpi broadcasts 
+###################################################################
+# figure out number of workers  
+  nWorkersEnv<- Sys.getenv("HPC4StatsnWorkers")
+# use the environment variable for the number of workers
+# this makes it convenient instead of editing the .rnl file.  
+  if( nWorkersEnv != ""){
+    nWorkers<- as.numeric( nWorkersEnv )
+    cat("number of workers from environment", nWorkers, fill=TRUE)
+  }
+    if( !exists(nWorkers)){
+        cat("This is a parallel computation but the number of worker (nWorkers) has not been specified", fill-TRUE)
+        }
+# I hope you have install Rmpi!    
+  library( Rmpi)
 # Spawn the workers
   tick<- proc.time()[3]
- cat("####  mpi.spawn.Rslaves(nslaves=nWorkers) ", fill=TRUE)
+    mpi.spawn.Rslaves(nslaves=nWorkers)
   tock<- proc.time()[3]
   timeSpawn<-tock - tick
 
-# loop over the list of data objects and  broadcast to workers
+# loop over the list of data objects and  broadcast these to workers
   tick<- proc.time()[3]
 # if data objects not given just use all the objects in the supervisor
-# workspace.
+# workspace. This is convenient but not the best programming style. 
   if( !exists("namesDataObjects")){
     namesDataObjects<- ls()
-    cat("NOTE: All data objects and functions in the supervisor workspace will be 
-        broadcast to the workers", fill=TRUE)
+    cat("NOTE: All data objects and functions in the supervisor
+ workspace will be broadcast to the workers", fill=TRUE)
   }
   for( objName in namesDataObjects ) {
-  	cat("broadcasting: ", objName, fill=TRUE)
-  	### do.call( "mpi.bcast.Robj2slave", 
- 	  ###       list( obj = as.name(objName) ))
+  	cat("Broadcasting: ", objName, fill=TRUE)
+  	do.call( "mpi.bcast.Robj2slave", 
+ 	         list( obj = as.name(objName) ))
   } 
   # loop over the list of libraries and  broadcast to workers
   cat( "****", fill=TRUE)
   for( objName in namesLibraries ) {
     cmd<- paste0( "library( ", objName, ",
                   character.only = TRUE)")
-    cat(" broadcasting library: ", objName, fill=TRUE)
-    ###do.call( "mpi.bcast.cmd", 
-    ###           list(     cmd = "library", 
-    ###               package = objName,
-    ###               lib.loc = namesLibraryLocations,
-    ###        character.only = TRUE) 
-    ###         )
+    cat(" Broadcasting library: ", objName, fill=TRUE)
+    do.call( "mpi.bcast.cmd", 
+             list(     cmd = "library", 
+                   package = objName,
+                   lib.loc = namesLibraryLocations,
+            character.only = TRUE) 
+             )
   } 
   tock<- proc.time()[3]
   timeBroadcast<-  tock - tick
-###################################################################
- 
-###################################################################  
-# here is where the heavy lifting happens
-# do this in chunks 
-  if( nChunks > 1){
-    chunkNames<- paste0(projectName, uniqueTime, "Chunk", 1:nChunks) 
-    }else{
-    chunkNames<- paste0(projectName,uniqueTime) 
-    }
-outputFileName<- paste0(outputDir,"/",chunkNames)
-#
-tick<- proc.time()[3] 
-cat( "****", fill=TRUE)
 
-for(  k in 1 : nChunks){  
-  tick0<- proc.time()[3]
-  
-cat("###  result <- mpi.iapplyLB( chunkStart[k] : chunkEnd[k], doTask)",
-      fill=TRUE)
-# next code block replaces the rmpi call
-result<- list()
-  for( taskIndex in (chunkStart[k] : chunkEnd[k]) ){
-     result<- c( result, list(doTask(taskIndex) ))
-  }
- tock0<- proc.time()[3]
+}
+###################################################################
+###### END !serial block for getting nWorkers and  Rmpi broadcasts 
+###################################################################
+
+###################################################################  
+###### Looping over tasks
+###################################################################
+# Here is where the heavy lifting happens
+# Do this in chunks. That is, do the tasks in nChunk blocks writing
+# out the results of each in a separate output file.
+# The names of these files are coordinated to make it easy to
+# reassemble the results.
+cat( "****", fill=TRUE)
 #
+tick<- proc.time()[3]   
+for(  k in 1 : nChunks){
+  tick0<- proc.time()[3]
+  if(!serial){
+# As Michael Jackson would say "This is it!"     
+     result <- mpi.iapplyLB( chunkStart[k] : chunkEnd[k], doTask)
+  }
+  else{
+# serial computation for testing    
+    result <- list()
+    for( id in chunkStart[k] : chunkEnd[k]){
+      out<- doTask(id)
+      result <- c( result, list(out) )
+    }
+  }
+  #
+  tock0<- proc.time()[3]
   cat(" ", fill=TRUE)
-#  
+#
+# accumulate the results and other information in a
+# self describing list
   saveList<- list( chunk = k,  
                   result = result, 
                   nTask1 = nTask1,
@@ -170,7 +199,7 @@ result<- list()
                   ) 
   fname<-outputFileName[k]
   chunkName<- chunkNames[k]
-  cat("Time (sec) for ",  chunkName, " : ",
+  cat("Time (sec) for ", chunkName, " : ",
                   tock0 - tick0, fill=TRUE)
   assign(chunkName, saveList)
   save( list=chunkName,
@@ -180,7 +209,8 @@ result<- list()
 tock<- proc.time()[3]
   timeApply<- tock - tick
 ###################################################################  
-# table of timing stats  
+# table of timing stats only do if !serial
+  if(!serial){
   timingStats<- c( timeSpawn,timeBroadcast,  timeApply)
   names( timingStats)<- c(  "Spawn", "Broadcast","Apply")
   cat( "****", fill=TRUE)
@@ -191,16 +221,25 @@ tock<- proc.time()[3]
   averageTime<- timeApply*nWorkers/ ( nTasks)
   cat( "average task time: timeApply*nWorkers/nTasks ", 
        averageTime, fill=TRUE )
-  cat( "****", fill=TRUE)
+  }  
+cat( "****", fill=TRUE)
+# Hints about reading back  in results
   cat( "To load an output file, in R try:", fill=TRUE)
-  cat( paste0("load( '",outputFileName[1],"' )"), fill=TRUE)
+cat( paste0("load( '",outputFileName[1],"' )"), fill=TRUE)
+cat("This is a list object. Use the names function to
+ list the different components", fill =TRUE)
+# Listing of all the output files handy for cutting and pasting.
   if( length(outputFileName) > 1 ){
-  cat("The full outputFileName list is:", fill=TRUE)
+  cat("The full outputFileName list for is:", fill=TRUE)
   cat( "####", fill=TRUE)
   cat("outFileName <- ", fill=TRUE)
   dput(outputFileName)
   cat( "####", fill=TRUE)
   }
- 
-# close up everything 
-  ### mpi.close.Rslaves()
+#
+  if( !serial){ 
+# close up everything -- bad things may happen if workers are not closed.
+    mpi.close.Rslaves()
+  } 
+# All done!
+
