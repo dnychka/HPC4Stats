@@ -18,3 +18,7 @@ HPC4StatsCMIP:
 An example using a subset of climate model output. The task is to fit a Generalized Pareto distribution (GPD) to daily precipitation simulated by the NCAR CCSM4 model. This is a historical run for the period 1955 01 01 to 1989 12 31. Here the GPD is fit by maximum likelihood separately for every model grid box.  Note that to reduce the size of the data set for the TEST example the full model output has been subsetted to be just a grid of 21x51 locations and 7300 (~20 years) time points. This is the R binary data object **prExample.rda** in the data subdirectory. 
 
 Note: For the production example the user will need to download or access the entire large netcdf file (~2.6Gb) called "pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc". A link to this file: https://www.dropbox.com/s/80qbm1zjr7grx4i/pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc?dl=0. On NCAR's Cheyenne HPC system this file is available in the directory:/glade/p/CMIP/CMIP5/output1/NCAR/CCSM4/historical/day/atmos/day/r1i1p1/files/pr_20120202/
+
+Acknowledgement:  Development
+ of this package was supported in part by the National Science Foundation  Grant
+ 1417857 and the National Center for Atmospheric Research. 
