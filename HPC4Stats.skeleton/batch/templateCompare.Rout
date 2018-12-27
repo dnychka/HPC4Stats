@@ -1,0 +1,106 @@
+
+R version 3.5.1 (2018-07-02) -- "Feather Spray"
+Copyright (C) 2018 The R Foundation for Statistical Computing
+Platform: x86_64-apple-darwin15.6.0 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> # set the Rnamelist file name
+> RNamelist <- "template.rnl"
+> # now run the supervisor script
+> # see comments in this script to follow the workflow. 
+>   source("../src/HPC4StatsSupervisor.R")
+*******************************************
+***** Begining HPC4Stats supervisor script  
+*******************************************
+Sourcing R Namelist (.rnl file) template.rnl
+Read 142 items
+Done sourcing
+****
+Project directory set from the R namelist file: 
+..
+Working directory for this session:
+/Users/nychka/Dropbox/Home/Repositories/HPC4Stats/HPC4Stats.skeleton/batch
+****
+loading library:  fields
+number of tasks: 75 from  1 to 75
+****
+Number of output chunks: 1
+Workspace of supervisor :
+****
+number of workers 2
+	2 slaves are spawned successfully. 0 failed.
+master (rank 0, comm 1) of size 3 is running on: Ratstar 
+slave1 (rank 1, comm 1) of size 3 is running on: Ratstar 
+slave2 (rank 2, comm 1) of size 3 is running on: Ratstar 
+NOTE: All data objects and functions in the supervisor
+    workspace will be broadcast to the workers
+Broadcasting:  chunkEnd
+Broadcasting:  chunkNames
+Broadcasting:  chunkSize
+Broadcasting:  chunkStart
+Broadcasting:  copyRNamelist
+Broadcasting:  dataDir
+Broadcasting:  dataFileName
+Broadcasting:  doTask
+Broadcasting:  doTaskTest
+Broadcasting:  namesLibraries
+Broadcasting:  namesLibraryLocations
+Broadcasting:  nChunks
+Broadcasting:  nTask1
+Broadcasting:  nTask1Env
+Broadcasting:  nTask2
+Broadcasting:  nTask2Env
+Broadcasting:  nTasks
+Broadcasting:  nWorkers
+Broadcasting:  nWorkersEnv
+Broadcasting:  objName
+Broadcasting:  outputDir
+Broadcasting:  outputFileName
+Broadcasting:  ozone2
+Broadcasting:  projectDir
+Broadcasting:  projectName
+Broadcasting:  RNamelist
+Broadcasting:  serial
+Broadcasting:  sourceDir
+Broadcasting:  taskTable
+Broadcasting:  tick
+Broadcasting:  timeSpawn
+Broadcasting:  tock
+Broadcasting:  uniqueTime
+****
+ Broadcasting library:  fields
+****
+ 
+Time (sec) for  TEST2018162248  :  3.802
+output file:  ../output/TEST2018162248
+****
+Summary
+2  Workers  and  75 tasks
+timing from Supervisor: 
+    Spawn Broadcast     Apply 
+    0.534     0.904     3.815 
+average task time: timeApply*nWorkers/nTasks  0.1017333
+****
+To load an output file, in R try:
+load( '../output/TEST2018162248' )
+This is a list object. Use the names function to
+   list the different components
+> 
+> 
+> 
+> proc.time()
+   user  system elapsed 
+  3.625   0.180   5.984 

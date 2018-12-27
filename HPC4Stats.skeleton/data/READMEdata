@@ -1,0 +1,14 @@
+##################################
+HPC4Stats/HPC4Stats.skeleton/data
+##################################
+
+Douglas Nychka, douglasnychka@gmail.com and  Dorit Hammerling, dorith@ucar.edu
+
+This data directory contains the R binary file ozone2.rda . This is a copy of the
+ozone2 data set from the R fields package.
+
+e.g. in R
+
+library(fields)
+data(ozone2)
+help( ozone2)
