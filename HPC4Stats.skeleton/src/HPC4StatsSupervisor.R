@@ -3,11 +3,13 @@
 cat("*******************************************", fill=TRUE)
 cat("***** Begining HPC4Stats supervisor script  ",fill=TRUE)
 cat("*******************************************", fill=TRUE) 
-# if the R object  RNamelist is not defined then
-# grab the file name of the namelist from the environmental varaible
+# if the R object RNamelist is not defined then
+# grab the file name from the environmental varaible
 # HPC4StatsNAMELIST
  if( !exists("RNamelist") ) {
      RNamelist <- Sys.getenv("HPC4StatsNAMELIST")
+     if( RNamelist=="")
+         stop("HPC4StatsNAMELIST not found in the environment")
    }   
   cat("Sourcing R Namelist (.rnl file)", RNamelist, fill=TRUE)
   source(RNamelist)
@@ -33,11 +35,10 @@ cat("*******************************************", fill=TRUE)
   if( !exists("serial") ){
     serial=FALSE   
   }
-if( serial){
-    cat("This is a serial computation with the loop over workers  \r",
-        "is replaced by a for loop in the supervisor session", fill=TRUE)
-   }
- 
+  if( serial){
+    cat("This is a serial computation",
+        "using an ordinary for loop", fill=TRUE)
+  }
   nTask1Env<- Sys.getenv("HPC4StatsnTask1")
   if( nTask1Env != ""){
     nTask1<- as.numeric( nTask1Env )
@@ -48,17 +49,17 @@ if( serial){
     nTask2<- as.numeric( nTask2Env )
     cat("nTask2  read from environment", fill=TRUE)
   }
-# load extra libraries for supervisor\
-if( !is.null(namesLibraries)){ 
-cat( "****", fill=TRUE)  
-for( objName in namesLibraries ) {
-  cat( "loading library: ", objName, fill=TRUE)
-  suppressPackageStartupMessages(
-    library( package= objName, lib.loc = namesLibraryLocations,
+# load extra libraries for supervisor
+  if( !is.null(namesLibraries)){ 
+    cat( "****", fill=TRUE)  
+    for( objName in namesLibraries ) {
+      cat( "loading library: ", objName, fill=TRUE)
+      suppressPackageStartupMessages(
+      library( package= objName, lib.loc = namesLibraryLocations,
            character.only = TRUE)
-   )
-}
-}
+      )
+    }
+  }
 ########################################################
 # following code should not depend on a specific project 
 ########################################################
@@ -73,74 +74,73 @@ for( objName in namesLibraries ) {
 #  
 # figure out the number of chunks if this variable is set
 # 
-if( !exists("chunkSize") ){
+  if( !exists("chunkSize") ){
     chunkStart<- nTask1
     chunkEnd<- nTask2
     chunkSize <- 1
-      }else{
+    }else{
        if( chunkSize < nWorkers){
-        stop("chunkSize too small")
-        }
-  chunkStart <- seq( nTask1, nTask2 - 1, chunkSize)
-  chunkEnd  <-  c(chunkStart[-1] - 1 , nTask2 )
+         stop("chunkSize too small")
+       }
+    chunkStart <- seq( nTask1, nTask2 - 1, chunkSize)
+    chunkEnd   <-  c(chunkStart[-1] - 1 , nTask2 )
   }
-  nChunks<- length( chunkStart )
+  nChunks <- length( chunkStart )
   cat( "****", fill=TRUE)  
   cat("Number of output chunks:" , nChunks, fill=TRUE)
+# Give the output chunk files common names 
   if( nChunks > 1){
     chunkNames<- paste0(projectName, uniqueTime, "Chunk", 1:nChunks) 
   }else{
     chunkNames<- paste0(projectName,uniqueTime) 
   }
-  
   outputFileName<- paste0(outputDir,"/",chunkNames)
 #  
 # list R working directory  
   cat("Workspace of supervisor :", fill=TRUE) 
-ls()
+  ls()
 
-if(!serial){
+  if(!serial){
 ###################################################################
 ###### BEGIN !serial block for getting nWorkers and  Rmpi broadcasts 
 ###################################################################
 # figure out number of workers  
-  nWorkersEnv<- Sys.getenv("HPC4StatsnWorkers")
+    nWorkersEnv<- Sys.getenv("HPC4StatsnWorkers")
 # use the environment variable for the number of workers
 # this makes it convenient instead of editing the .rnl file.  
-  if( nWorkersEnv != ""){
-    nWorkers<- as.numeric( nWorkersEnv )
-    cat("number of workers from environment", nWorkers, fill=TRUE)
-  }
+    if( nWorkersEnv != ""){
+      nWorkers<- as.numeric( nWorkersEnv )
+      cat("number of workers from environment", nWorkers, fill=TRUE)
+    }
     if( !exists("nWorkers")){
         cat("This is a parallel computation but the number of workers
                 (nWorkers) has not been specified", fill-TRUE)
         q()
     }
-cat( "****", fill=TRUE)  
+  cat( "****", fill=TRUE)  
   cat("number of workers", nWorkers, fill=TRUE)    
-# I hope you have install Rmpi!    
+# We hope you have installed Rmpi!    
   library( Rmpi)
 # Spawn the workers
-  tick<- proc.time()[3]
+  tick <- proc.time()[3]
     mpi.spawn.Rslaves(nslaves=nWorkers)
-  tock<- proc.time()[3]
-  timeSpawn<-tock - tick
-
+  tock <- proc.time()[3]
+  timeSpawn <- tock - tick
 # loop over the list of data objects and  broadcast these to workers
-  tick<- proc.time()[3]
-# if data objects not given just use all the objects in the supervisor
+  tick <- proc.time()[3]
+# if data objects are not specified use all the objects in the supervisor
 # workspace. This is convenient but not the best programming style. 
   if( !exists("namesDataObjects")){
     namesDataObjects<- ls()
     cat("NOTE: All data objects and functions in the supervisor
- workspace will be broadcast to the workers", fill=TRUE)
+    workspace will be broadcast to the workers", fill=TRUE)
   }
   for( objName in namesDataObjects ) {
   	cat("Broadcasting: ", objName, fill=TRUE)
   	do.call( "mpi.bcast.Robj2slave", 
  	         list( obj = as.name(objName) ))
   } 
-  # loop over the list of libraries and  broadcast to workers
+ # loop over the list of libraries and load on  workers
   cat( "****", fill=TRUE)
   for( objName in namesLibraries ) {
     cmd<- paste0( "library( ", objName, ",
@@ -166,7 +166,7 @@ cat( "****", fill=TRUE)
 ###################################################################
 # Here is where the heavy lifting happens
 # Do this in chunks. That is, do the tasks in nChunk blocks writing
-# out the results of each in a separate output file.
+# out the results of each chunk  in a separate output file.
 # The names of these files are coordinated to make it easy to
 # reassemble the results.
 cat( "****", fill=TRUE)
@@ -191,14 +191,20 @@ for(  k in 1 : nChunks){
   cat(" ", fill=TRUE)
 #
 # accumulate the results and other information in a
-# self describing list
-  saveList<- list( chunk = k,  
-                  result = result, 
-                  nTask1 = nTask1,
-                  nTask2 = nTask2,
-                  chunkStart = chunkStart,
-                  chunkEnd = chunkEnd,
-                  copyRNamelist= copyRNamelist
+# self-describing list
+  info <- list(projectName = projectName,
+                     chunk = k,
+                      date = date(),
+          workingDirectory = getwd(),
+                 RNamelist = RNamelist,
+                    nTask1 = nTask1,
+                    nTask2 = nTask2,
+                chunkStart = chunkStart,
+                  chunkEnd = chunkEnd
+                  )
+  saveList <-    list( info = info,  
+                    result = result,
+         RNamelistContents = copyRNamelist
                   ) 
   fname<-outputFileName[k]
   chunkName<- chunkNames[k]
@@ -214,30 +220,31 @@ tock<- proc.time()[3]
 ###################################################################  
 # table of timing stats only do if !serial
   if(!serial){
-  timingStats<- c( timeSpawn,timeBroadcast,  timeApply)
-  names( timingStats)<- c(  "Spawn", "Broadcast","Apply")
-  cat( "****", fill=TRUE)
-  cat("Summary", fill=TRUE)
-  cat(nWorkers ," Workers  and ", nTasks, "tasks", fill=TRUE)
-  cat("timing from Supervisor: ", fill=TRUE)
-  print( timingStats)
-  averageTime<- timeApply*nWorkers/ ( nTasks)
-  cat( "average task time: timeApply*nWorkers/nTasks ", 
+    timingStats<- c( timeSpawn,timeBroadcast,  timeApply)
+    names( timingStats)<- c(  "Spawn", "Broadcast","Apply")
+    cat( "****", fill=TRUE)
+    cat("Summary", fill=TRUE)
+    cat(nWorkers ," Workers  and ", nTasks, "tasks", fill=TRUE)
+    cat("timing from Supervisor: ", fill=TRUE)
+    print( timingStats)
+    averageTime<- timeApply*nWorkers/ ( nTasks)
+    cat( "average task time: timeApply*nWorkers/nTasks ", 
        averageTime, fill=TRUE )
   }  
-cat( "****", fill=TRUE)
-# Hints about reading back  in results
+  cat( "****", fill=TRUE)
+# Print hints about reading back  in results
   cat( "To load an output file, in R try:", fill=TRUE)
-cat( paste0("load( '",outputFileName[1],"' )"), fill=TRUE)
-cat("This is a list object. Use the names function to
- list the different components", fill =TRUE)
+  cat( paste0("load( '",outputFileName[1],"' )"), fill=TRUE)
+  cat("This is a list object. Use the names function to
+   list the different components", fill =TRUE)
 # Listing of all the output files handy for cutting and pasting.
   if( length(outputFileName) > 1 ){
-  cat("The full outputFileName list for this computation is:", fill=TRUE)
-  cat( "####", fill=TRUE)
-  cat("outFileName <- ", fill=TRUE)
-  dput(outputFileName)
-  cat( "####", fill=TRUE)
+    cat("The full outputFileName list for this computation is:",
+          fill=TRUE)
+    cat( "####", fill=TRUE)
+    cat("outFileName <- ", fill=TRUE)
+    dput(outputFileName)
+    cat( "####", fill=TRUE)
   }
 #
   if( !serial){ 

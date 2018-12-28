@@ -1,21 +1,25 @@
 ################################
 HPC4Stats/HPC4Stats.skeleton/src
 ################################
-Douglas Nychka, douglasnychka@gmail.com
-with modification from Dorit Hammerling, dorith@ucar.edu
+Douglas Nychka, douglasnychka@gmail.com and Dorit Hammerling, dorith@ucar.edu
 
-Add any source files in this directory and specify them to be
-sourced in the .rnl file.
+Add any source files in this directory and specify them to be sourced
+in the .rnl file.
 
-supervisorBatch.R:   The script controlling the supervisor session.
-You should not need to change this and keep the name the same if you do. 
+HPC4StatsSupervisor.R: The script controlling the supervisor session.
+You should not need to change this for most projects. See the
+batch/supervisorBatch.R to see how this is sourced in a batch job.
 
-doTaskTest.R:  Sample doTask function.
-Note that it takes only one argument, the task ID number but of course can
-use all the objects in the worker session that have been broadcast to it from the supervisor. 
+doTaskTest.R: Sample doTask function.  Note that it takes only one
+argument, the task ID number but of course can use all the objects in
+the worker session that have been broadcast to it from the supervisor.
 
-In the .rnl  script reassign the function with the name doTask.
-E.g. in this case
+Typically one would a doTask type function into the supervisor session
+and then reassign it to have the name doTask. E.g. in this case
+
 doTask <- doTaskTest
+
+See the template.rnl example for more details. 
+
 
 
