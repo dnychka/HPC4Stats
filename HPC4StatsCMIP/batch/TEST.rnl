@@ -3,15 +3,16 @@
 #############################
   projectName<- "TEST"
 # Number of workers
-# If not specified will be read from the enviornment variable
+# If not specified will be read from the environment variable
   nWorkers <- 2
-  nTask1 <-  1 # starting task ID
+  nTask1 <-  1  # starting task ID
   nTask2 <-  50 # ending task ID
+  
 # define some project specific data directories.   
   projectDir<- ".."
   dataDir  <- paste0(projectDir, "/data")
-  dataFileName <- paste0(dataDir,"/",
-  "prExample.rda")
+  dataFileName <- paste0(dataDir,"/","prExample.rda")
+  
 # remaining names can be changed but these standard ones can be kept. 
   sourceDir<- paste( projectDir, "src",    sep="/")
   outputDir<- paste( projectDir, "output", sep="/")

@@ -1,24 +1,53 @@
 #########
 HPC4Stats
 #########
-Douglas Nychka, douglasnychka@gmail.com
-with modification from Dorit Hammerling, dorith@ucar.edu
 
-HPC4Stats: A framework for managing embarrassingly parallel data analysis using R and the Rmpi package.
+Douglas Nychka, nychka@mines.edu and Dorit Hammerling,
+dorith@ucar.edu
 
+HPC4Stats: A framework for managing embarrassingly parallel data
+analysis using R and the Rmpi package. 
+Q21ZAQ~1 
 
 Directories in this repository:
 
 HPC4Stats.skeleton:
 
-A tree of subdirectories (batch, data, output, src)  that is the recommended way to organize computation/data analysis within HPC4Stats. These directories are populated with README files that explain the purpose of each directory and the files contained in them. This skeleton is setup to do an example parallel computation. See the batch subdirectory to run this example. You will need the fields package installed to run this example, partly as a way to show how packages are identified for computation and loaded. 
+A tree of subdirectories (batch, data, output, src) that is the
+recommended way to organize a computation/data analysis within
+HPC4Stats. These directories are populated with README files that
+explain the purpose of each directory and the files contained in
+them. This skeleton is setup to do an example parallel computation and
+see the batch subdirectory to run this example. You will need the
+fields package installed to run this example, partly as a way to show
+how packages are identified for computation and loaded.
 
-HPC4StatsCMIP:  
+HPC4StatsCMIP:
 
-An example using a subset of climate model output. The task is to fit a Generalized Pareto distribution (GPD) to daily precipitation simulated by the NCAR CCSM4 model. This is a historical run for the period 1955 01 01 to 1989 12 31. Here the GPD is fit by maximum likelihood separately for every model grid box.  Note that to reduce the size of the data set for the TEST example the full model output has been subsetted to be just a grid of 21x51 locations and 7300 (~20 years) time points. This is the R binary data object **prExample.rda** in the data subdirectory. 
+An example using a subset of climate model output and organized in the
+same way as HPC4Stats.skeleton. The task is to fit a Generalized
+Pareto distribution (GPD) to daily precipitation simulated by the NCAR
+CCSM4 model. This is a historical run for the period 1955 01 01 to
+1989 12 31. Here the GPD is fit by maximum likelihood separately for
+every model grid box.  Note that to reduce the size of the data set
+for the TEST example the full model output has been subsetted to be
+just a grid of 21x51 locations and 7300 (~20 years) time points. This
+is the R binary data object prExample.rda in the data
+subdirectory.
 
-Note: For the production example the user will need to download or access the entire large netcdf file (~2.6Gb) called "pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc". A link to this file: https://www.dropbox.com/s/80qbm1zjr7grx4i/pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc?dl=0. On NCAR's Cheyenne HPC system this file is available in the directory:/glade/p/CMIP/CMIP5/output1/NCAR/CCSM4/historical/day/atmos/day/r1i1p1/files/pr_20120202/
+Note: For the production example the user will need to install the
+ncdf4 packageand to download or access the entire large netcdf file
+(~2.6Gb):
+"pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc". A link to this
+file:
 
-Acknowledgement:  Development
- of this package was supported in part by the National Science Foundation  Grant
- 1417857 and the National Center for Atmospheric Research. 
+https://www.dropbox.com/s/80qbm1zjr7grx4i/pr_day_CCSM4_historical_r1i1p1_19550101-19891231.nc?dl=0
+
+On NCAR's Cheyenne HPC system this file is available in the
+directory:
+
+/glade/p/CMIP/CMIP5/output1/NCAR/CCSM4/historical/day/atmos/day/r1i1p1/files/pr_20120202/
+
+Acknowledgement: Development of this package was supported in part by
+ the National Science Foundation Grant 1417857 and the National Center
+ for Atmospheric Research.

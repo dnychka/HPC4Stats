@@ -1,65 +1,84 @@
 ###################################
-HPC4Stats/HPC4StatsCMIP/batch test
+# HPC4Stats/HPC4StatsCMIP/batch test
 ##################################
-Douglas Nychka, douglasnychka@gmail.com
-with modification from Dorit Hammerling, dorith@ucar.edu
+Douglas Nychka, douglasnychka@gmail.com and Dorit Hammerling, dorith@ucar.edu
 
 This script fits a GPD distribution to a smaller number of model grid
 cells and does not use all the time points. The data file
 prExample.rda is already in R binary format and contained in the data
-directory.
-
-The 2 lines below will run this batch job on 2 cores from a bash shell
-in UNIX. You will need to have the extRemes and netcdf4 packages
-installed in R.  To run on more cores set the nWorker variable to another
-size either in the .rnl file or through the environment variable
+directory. In addition to the Rmpi package you will need the extRemes
+installed. To run on more cores set the nWorker variable to another
+size either in the TEST.rnl file or through the environment variable
 HPC4StatsnWorker. Note that on Cheyenne you will need to modify the
 .pbs file to include more nodes if the number of workers exceeds 35.
 
+##################################
+# Running using a wrapper script.
+##################################
+   R CMD batch --no-save batchSupervisor.R  TEST.Rout
 
-# Required export name of R namelist
-# assume that you are in the batch directory
+NOTE: The wrapper script, batchSupervisor.R, assigns TEST.rnl as the R
+namelist.  and this line needs to be changed to run other examples
+
+#####################################
+# Running using an environment variable.
+#####################################
+
+In a UNIX bash shell and in the batch directory
+
     export HPC4StatsNAMELIST=TEST.rnl
-# run the batch job
+    R CMD batch --no-save ../src/HPC4StatsSupervisor.R  TEST.Rout
 
-    R CMD batch ../src/supervisorBatch.R  TEST.Rout
+See the READMEbatch file in HPC4Stats.skeletion/batch for more details
+about these two ways to run the batch script
 
-# browse the output file TEST.Rout for timing and to check for potential errors.
+Browse the output file TEST.Rout for timing and to check for potential
+errors. The file TESTCompare.Rout is a previous to use as a benckmark.
+ 
+#####################
+# Running on Cheyenne
+#####################
 
-
-To run the Cheyenne version of this script use the script cheyenneTEST.pbs to
-submit the job to a batch queue
+The Cheyenne version of this example uses the script cheyenneTEST.pbs to
+submit the job to a batch queue.
 
 In the HPC4StatsCMIP/batch directory and in UNIX:
 
+cp pbs/cheyenneTEST.pbs .
 qsub cheyenneTEST.pbs
 
-Take a look at this file to review how the batch job is setup. You
-will note the last two lines of this file are similar to those
-above. Because this uses the same .rnl file only 2 workers are used in
-this example.
+See HPC4Stats.skeletion/batch/READMEbatch for more details on this
+process.
 
+Take a look at cheyenneTEST.pbs to review how the batch job is
+setup. You will note the last two lines of this file are similar to
+those above. Because this uses the same TEST.rnl file only 2 workers
+are used in this example.
 
-################################################################
+###################
 # To check results
-# Start R  and set working directory to this batch directory.
-# identify the output file
+###################
+
+Start R and set working directory to this batch directory and identify
+the right output file
 
 fname<-  dir("../output")
  # load in results you will have to pick out the right output file
  print(fname)
+ 
  # edit the fname so it is just the most recent file beginning with TEST
     
     load( paste0("../output/",fname) )
     load("../data/prExample.rda")
     dimData<- dim( prExample)
-    
-   
+# matrix to hold grid box fits.      
     look<- matrix( NA, nrow=dimData[1], ncol= dimData[2])
     result<- (get(fname))$result
     N<- length( result)
     for(  k in 1: N ){
     temp<- result[[k]]
+#   temp$outSummary contains the fitted parameters and otther info
+#   for the grid boxes. 
     look[temp$I,temp$J] <-  temp$outSummary[,1]
     }
 

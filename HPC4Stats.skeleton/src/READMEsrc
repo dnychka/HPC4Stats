@@ -1,7 +1,7 @@
 ################################
 HPC4Stats/HPC4Stats.skeleton/src
 ################################
-Douglas Nychka, douglasnychka@gmail.com and Dorit Hammerling, dorith@ucar.edu
+Douglas Nychka, nychka@mines.edu and Dorit Hammerling, dorith@ucar.edu
 
 Add any source files in this directory and specify them to be sourced
 in the .rnl file.
@@ -14,8 +14,9 @@ doTaskTest.R: Sample doTask function.  Note that it takes only one
 argument, the task ID number but of course can use all the objects in
 the worker session that have been broadcast to it from the supervisor.
 
-Typically one would a doTask type function into the supervisor session
-and then reassign it to have the name doTask. E.g. in this case
+Typically one would source a doTask type function into the supervisor
+session and then reassign it to have the name doTask this avoids many
+function in a source directory all called doTask.  E.g. in this case
 
 doTask <- doTaskTest
 

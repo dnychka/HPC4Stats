@@ -17,25 +17,27 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 'help.start()' for an HTML browser interface to help.
 Type 'q()' to quit R.
 
+> 
 > # set the Rnamelist file name
-> RNamelist <- "template.rnl"
+> RNamelist <- "TEST.rnl"
 > # now run the supervisor script
 > # see comments in this script to follow the workflow. 
 >   source("../src/HPC4StatsSupervisor.R")
 *******************************************
 ***** Begining HPC4Stats supervisor script  
 *******************************************
-Sourcing R Namelist (.rnl file) template.rnl
-Read 142 items
+Sourcing R Namelist (.rnl file) TEST.rnl
+Read 84 items
 Done sourcing
 ****
 Project directory set from the R namelist file: 
 ..
 Working directory for this session:
-/Users/nychka/Dropbox/Home/Repositories/HPC4Stats/HPC4Stats.skeleton/batch
+/Users/nychka/Dropbox/Home/Repositories/HPC4Stats/HPC4StatsCMIP/batch
 ****
-loading library:  fields
-number of tasks: 75 from  1 to 75
+loading library:  extRemes
+loading library:  ncdf4
+number of tasks: 50 from  1 to 50
 ****
 Number of output chunks: 1
 Workspace of supervisor :
@@ -45,62 +47,35 @@ number of workers 2
 master (rank 0, comm 1) of size 3 is running on: Ratstar 
 slave1 (rank 1, comm 1) of size 3 is running on: Ratstar 
 slave2 (rank 2, comm 1) of size 3 is running on: Ratstar 
-NOTE: All data objects and functions in the supervisor
-    workspace will be broadcast to the workers
-Broadcasting:  chunkEnd
-Broadcasting:  chunkNames
-Broadcasting:  chunkSize
-Broadcasting:  chunkStart
-Broadcasting:  copyRNamelist
+Broadcasting:  doTask
+Broadcasting:  getSlice
+Broadcasting:  projectDir
+Broadcasting:  outputDir
+Broadcasting:  sourceDir
 Broadcasting:  dataDir
 Broadcasting:  dataFileName
-Broadcasting:  doTask
-Broadcasting:  doTaskTest
-Broadcasting:  namesLibraries
-Broadcasting:  namesLibraryLocations
-Broadcasting:  nChunks
-Broadcasting:  nTask1
-Broadcasting:  nTask1Env
-Broadcasting:  nTask2
-Broadcasting:  nTask2Env
-Broadcasting:  nTasks
-Broadcasting:  nWorkers
-Broadcasting:  nWorkersEnv
-Broadcasting:  objName
-Broadcasting:  outputDir
-Broadcasting:  outputFileName
-Broadcasting:  ozone2
-Broadcasting:  projectDir
-Broadcasting:  projectName
-Broadcasting:  RNamelist
-Broadcasting:  serial
-Broadcasting:  sourceDir
+Broadcasting:  tailProb
 Broadcasting:  taskTable
-Broadcasting:  tick
-Broadcasting:  timeSpawn
-Broadcasting:  tock
-Broadcasting:  uniqueTime
 ****
- Broadcasting library:  fields
+ Broadcasting library:  extRemes
+ Broadcasting library:  ncdf4
 ****
  
-Time (sec) for  TEST2018162102  :  3.916
-output file:  ../output/TEST2018162102
+Time (sec) for  TEST2018221623  :  10.937
+output file:  ../output/TEST2018221623
 ****
 Summary
-2  Workers  and  75 tasks
+2  Workers  and  50 tasks
 timing from Supervisor: 
     Spawn Broadcast     Apply 
-    0.537     0.918     3.929 
-average task time: timeApply*nWorkers/nTasks  0.1047733
+    0.536     0.311    10.960 
+average task time: timeApply*nWorkers/nTasks  0.4384
 ****
 To load an output file, in R try:
-load( '../output/TEST2018162102' )
+load( '../output/TEST2018221623' )
 This is a list object. Use the names function to
    list the different components
 > 
-> 
-> 
 > proc.time()
    user  system elapsed 
-  3.672   0.180   6.125 
+  2.646   0.186  12.542 

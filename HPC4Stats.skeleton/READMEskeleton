@@ -5,9 +5,9 @@ HPC4Stats/HPC4Stats.skeleton
 Douglas Nychka, douglasnychka@gmail.com and Dorit Hammerling,
 dorith@ucar.edu
 
-This is a simple skeleton set of subdirectories and source files for
-using Rmpi in batch mode. The subdirectories each have README files
-that will guide you through what each is used for and the appropriate
+This is a simple skeleton of subdirectories and source files for using
+Rmpi in batch mode. The subdirectories each have README files that
+will guide you through what each is used for and the appropriate
 contents.
 
 The main advantage of this framework is that with minimal setup one
@@ -39,8 +39,9 @@ hard code these for each batch job.
 To run the example, move to the batch subdirectory of HPC4Stats and
 type in a UNIX bash shell (or equivalent on your system):
 
-R CMD BATCH --no-save ../src/supervisorBatch.R template.Rout See file
-READMEbatch for more details about how this works.
+R CMD BATCH --no-save ../src/supervisorBatch.R template.Rout
+
+See READMEbatch for more details about how this works.
 
 This example reads in, and then broadcasts to the workers, a data set
 of 89 daily ozone values across the Midwest US. The task is to compute
@@ -52,8 +53,8 @@ output file.
 Perhaps the most confusing part of this setup is how the name of the R
 namelist file (e.g. "template.rnl") is passed to the batch script. See
 supervisorBatch.R for this detail. An alternative way to set the name
-of this file is through an environment variable and the the
-READMEbatch file explains how to do this.
+of this file is through an environment variable and the READMEbatch
+file explains how to do this.
 
 By default the output is in the subdirectory output and has a unique
 file name based on the project name and the time. This skeleton
@@ -76,7 +77,7 @@ computation to setup the Rmpi runs. In particular the task table can
 be made complex for some applications to connect an integer taskID to
 the all the information that is needed for the worker to do the
 computation. For example, for climate model output the taskTable could
-map the taskID (a row in a data frame) to the specific grid box and
+map the taskID (a row in a data frame) to the specific grid boxs and
 fitting parameters. It could also specify filenames that link to
 subsets or tiles of the data that would be read in or written to by
 the workers.

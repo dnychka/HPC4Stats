@@ -1,8 +1,7 @@
 ################################
 HPC4Stats/HPC4StatsCMIP/lib
 ################################
-Douglas Nychka, douglasnychka@gmail.com
-with modification from Dorit Hammerling, dorith@ucar.edu
+Douglas Nychka, douglasnychka@gmail.com and  Dorit Hammerling, dorith@ucar.edu
 
 
 This directory is a good place to put R packages that are built
@@ -15,4 +14,4 @@ Here package.tar.gz is the source code "tar ball" that is either
 obtained from CRAN or another source.
 
 Loading of packages is controlled by the library list created in the
-.rnl file and managed in the supervisorBatch.R script
+.rnl file and managed in the HPC4StatsSupervisor.R script

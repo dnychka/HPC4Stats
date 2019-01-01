@@ -8,48 +8,65 @@ information to the supervisor session.
 
 template.rnl: Example of a namelist with comments indicating places to
 add required and also optional information. This file will be sourced
-by R before the supervisor script is run so it can contain assignments
-and R code as needed.
+by R before the supervisor script is run so it can make assignments
+and load R code as needed.
 
-supervisorBatch.R: A two line batch script for R that sets up
-the computation. The first line will need to be changed whenever the name of the R
-namelist filename is changed.
+templateCompare.Rout: Copy of the batch output file from running the
+example.
 
-The subfolder pbs contains template.pbs templateBig.pbs: These are
-examples of batch queueing files to run on Cheyenne (Part of the NCAR/Wyoming
-supercomputing facility).
+supervisorBatch.R: A two line batch script for R that sets up the
+computation. The first line will need to be changed whenever the name
+of the R namelist filename is changed.
 
-pbs/template.pbs: selects 1 node and 35 workers/cores
-total to test Rmpi running on one node.
+The subfolder pbs contains examples of batch queueing files to run on
+Cheyenne (Part of the NCAR/Wyoming supercomputing facility).
+
+pbs/template.pbs: selects 1 node and 35 workers/cores total to test
+Rmpi running on one node.
 
 pbs/templateBig.pbs: selects 2 node and 71 workers/cores total and
 thus tests Rmpi running across 2 nodes.
 
 
-##################################
+#######################
 ### Running the example
-##################################
+#######################
 
-To run as a simple batch job in a UNIX shell (on a local
-machine such as your laptop):
+To run as a simple batch job in a UNIX shell (on a local machine such
+as your laptop):
 
 R CMD BATCH --no-save supervisorBatch.R template.Rout
 
+Following the usual R syntax for batch jobs the example given above
+will create the file template.Rout that has the output from R commands
+executed in the supervisor along with helpful summaries of the
+computation and namelist variables. The computational output is
+written as a binary R object to the output directory one level up from
+batch.The default is to loop over tasks using the Rmpi package,
+distributing tasks to the workers.  To run as a serial code (only
+supervisor is doing tasks using a for loop) set the serial variable in
+the namelist to TRUE.
+
+The batch output file templateCompare.Rout and its corresponding
+output file in the subdirectory "output" (see ../output) are included
+in this skeleton to check your results. Specifically, the output
+binary file for this example will have the component "result" that is
+a list of summary statistics for 75 days of an ozone data set.
+
 This test case assumes that the Rmpi and fields packages have been
 installed.  Make sure you are in this batch subdirectory when
-executing these commands!  After this example runs it will create the
-output file template.Rout from the R session. The numerical output as
-R binary files is written to the output directory (one level up from
-batch). Refer to the namelist file template.rnl to see how the names
-for the output, source, and data directories are set. template.Rout
-will also give some instructions how to read the numerical output file
-back into an R session to check the results.
+executing these commands! Also it is a good practice to make sure your
+local saved R workspace (i.e delete .RData) is empty before running
+this example.  Refer to the namelist file template.rnl to see how the
+names for the output, source, and data directories are
+set. template.Rout will also give some instructions how to read the
+numerical output file back into an R session to check the results.
 
 The batch file supervisorBatch.R only needs two lines and in this
 example they are:
 
   RNamelist <- "template.rnl"
-  source("../src/HPC4Stats.R")
+  source("../src/HPC4StatsSupervisor.R")
 
 The first line is the name of the R namelist file and the second runs
 the script that takes the information from the namelist and does the
@@ -58,23 +75,13 @@ need to alter this code. The namelist should have all the specific
 information to redo the computation and there should be enough
 flexibility to handle most data analysis projects. A copy of the
 namelist file is included with the output object. We recommend _not_
-modifying the HPC4Stats.R script and explotiing the namelist strategy.
+modifying the HPC4Stats.R script and instead exploiting the namelist
+strategy.
 
-The default is to loop over tasks using the Rmpi package, distributing
-tasks to the workers.  To run as a serial code (only supervisor is
-doing tasks using a for loop) set the serial variable in the namelist
-to TRUE.
-
-Also for debugging and testing one can open an interactive R session
-and paste in the the lines of the batch script listed above. In this
-way the Rmpi computation will be done but now the supervisor session
-is also the interactive session and the workers are spawned from this.
-
-Following th ususal R sytax for batch jobs the example givne above
-will create the file template.Rout that has the R commands exectuted
-in the supervisor along with helpkful summaries of the computation and
-namelist variables. The actual output is written as a binary R object
-to the output directory.
+For debugging and testing one can open an interactive R session and
+paste in the the lines of the batch script listed above. In this way
+the Rmpi computation will be done but now the supervisor session is
+also the interactive session and the workers are spawned from this.
 
 NOTE: Parts of template.Rout print details about the Rmpi settings but
 this is just for debugging the R namelist file.
@@ -84,51 +91,58 @@ this is just for debugging the R namelist file.
 ### environment variables.
 ##################################
 
-An older version of this framework was written to take the R namelist
-filename as an environment variable HPC4StatsNAMELIST. The batch
-script looks for this variable and if it exists this choice overrides
-any other assignment. With this device then the batch script
-HPC4Stats.R can be sourced directly and removes the need for the
-wrapper script listed above.  Specifically, in the UNIX bash shell and
-in the batch subdirectory this same example can be run as
+An alternative version of this framework was written to take the R
+namelist filename as an environment variable, HPC4StatsNAMELIST. The
+batch script looks for this variable and if it exists this choice
+overrides any other assignment.  Specifically, in the UNIX bash shell
+and in the batch subdirectory this same example can be run as:
 
 export HPC4StatsNAMELIST=template.rnl
-R CMD BATCH --no-save ../src/supervisorBatchSerial.R templateSerial.Rout
+R CMD BATCH --no-save ../src/HPC4StatsSupervisor.Rout template.Rout
 
-and will give identical results. Moreover, the number of workers and
-task ranges can be changed by environment variables as well (see the
-comments in the template.rnl file for details). Doug has found that
-running on Cheyenne it is more convenient to change the number of
-workers and the task ranges as an environment variable 
-in the PBS script rather than continually reediting or
-copying the .rnl file. See the PBS batch scripts in the pbs
-subdirectory for examples of this alternative style.
+and will give identical results.
+
+With this device then the primary batch script HPC4StatsSupervisor.R
+is sourced directly and removes the need for the wrapper script listed
+above. Moreover, the number of workers and task ranges can be changed
+by environment variables as well (see the comments in the template.rnl
+file for details). The disadvantage is that it requires a user to
+manipulate environment variables and this may be awkward outside of a
+UNIX shell script.  Doug has found that running on Cheyenne it is more
+convenient to change the number of workers and the task ranges as an
+environment variable in the PBS script rather than reediting a
+supervisorBatch.R script or making many copies of the .rnl file. See
+the PBS batch scripts in the pbs subdirectory for examples of this
+alternative style.
 
 ########################################
 ### Running the batch script on Cheyenne
 ########################################
 
 In the subdirectory pbs (HPC4Stats/HPC4Stats.skeleton/batch/pbs) are
-two batch job queuing scripts. PBS is short for PBS Pro workload
-management system and controls the batch system on Cheyenne. These
-scripts use the environment variable strategy for setting the
-R namelist filename and also the number of workers. Also
-HPC4StatsSupervisor.R is called directly as the batch script.
+two batch job queuing scripts. To run the smaller job on Cheyenne, in
+the batch subdirectory first copy the PBS batch script into this
+directory You will need to insert your project id at the line
+beginning
+#PBS -A  
+then submit to the batch
+system. 
 
-NOTE: You will need to insert your project id  at  the line beginning
-#PBS -A   
+cp  pbs/template.pbs .
+#  this file to have your project ID 
+qsub template.pbs
+
+This will produce the same output files as the laptop/desktop example above. 
+
+PBS is short for PBS Pro workload management system and controls the
+batch system on Cheyenne. These scripts use the environment variable
+strategy for setting the R namelist filename and also the number of
+workers and so HPC4StatsSupervisor.R is called directly as the batch
+script.
 
 See
 https://www2.cisl.ucar.edu/resources/computational-systems/cheyenne/running-jobs/submitting-jobs-pbs
 for a tutorial and documentation on setting up the PBS script.
 
-To run the smaller job on Cheyenne,in the batch subdirectory first
-copy the PBS batch script into this directory then submit to the batch
-system
-
-cp  pbs/template.pbs .
-qsub template.pbs
-
-This will produce the same output files as the laptop/desktop example above. 
 
 

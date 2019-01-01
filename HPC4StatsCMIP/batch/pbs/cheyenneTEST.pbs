@@ -15,4 +15,4 @@ source /glade/u/apps/opt/lmod/4.2.1/init/bash
 
 export HPC4StatsNAMELIST=TEST.rnl
 
-mpirun -n 1 R CMD BATCH --no-save ../src/supervisorBatch.R $PBS_JOBID.Rout
+mpirun -n 1 R CMD BATCH --no-save ../src/HPC4StatsSupervisor.R $PBS_JOBID.Rout
